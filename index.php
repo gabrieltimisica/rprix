@@ -30,7 +30,7 @@
                 session_destroy();
             }
             unset($_SESSION['error']); // daca am ajuns aici nu avem erori, si trebuie sa il stergem, in caz ca am avut la loginu precedent
-            header('Location: php/welcome.php');
+            header('Location: php/home.php');
         }
     } // end else
 ?>
@@ -87,7 +87,7 @@
                 $_SESSION['prenume'] = $procedure_return->nume;
                 $_SESSION['privilegiu'] = $procedure_return->privilegiu;
                 unset($_SESSION['email_value_attribute']);
-                echo "<script> window.location.replace('php/welcome.php'); </script>"; // e in loc de header pentru ca headerul il poti pune doar in.... header sus :))
+                echo "<script> window.location.replace('php/home.php'); </script>"; // e in loc de header pentru ca headerul il poti pune doar in.... header sus :))
             } else // daca e gresit
             {
                 $_SESSION["error"] = "Email sau parola gresita !";
