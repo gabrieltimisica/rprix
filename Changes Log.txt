@@ -7,3 +7,5 @@ TO DO :
 
 ================================v1 17.04.2018
 Vladimir:
+Gabi:
+- added colors to index.php
