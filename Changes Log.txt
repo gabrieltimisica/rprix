@@ -1,0 +1,58 @@
+TO DO:
+
+- cand e mic ecranul, fa sa se miste numele ins tanga de tot, iar in dreapta sa ramana doar butonu de settings
+- adauga buton de settings 
+- fa sa mearga overflow-x pentru grafice cand e sub 500 px
+- fa sa apara pe grafic sus temperatura maxim, umiditatea
+- ! schimba procedura verificare login sa returneze si nume prenume privilegii 
+- template in html css pentru patratul de show senzor values
+- working php exec insert
+- add to the session more information from the DB on login, like the privileges etc
+
+============================ v1.15 14.04.2018
+Added responsive interface
+
+============================ v1.14 10.04.2018
+Added interface for showing sensors value
+
+============================ v1.14 10.04.2018
+Showing all 3 values with ajax, at different times BEST
+Working ajax cross domain, that returns the value and inserts into DB 
+
+============================ v1.13 08.04.2018
+Python succesfully return value back to php after inserting
+Sync the server timezone correctly
+Changed senzor_activ default to NULL
+Installed VS code on PI
+Working python scripts that call mysql procedures for inserting values in DB
+Added mysql procedure "inserare_valori_senzori"
+Set default momentul_introducerii from MasuratoriSenzori to CURRENT_TIMESTAMP
+Deleted unitate_de_masura from MasuratoriSenzor
+
+============================ v1.121 05.04.2018
+Bug fix: red border-color won't show on inputs after bad registration
+Bug fix: couldn't click on text with values because of the label
+Bug fix: the value of email won't reenter in the input after unsuccesful login
+Added animated labels
+
+============================ v1.12 04.04.2018
+Deleted php echo error showing
+Added inputs replacement after wrong inputs on register
+Added inputs replacement after wrong inputs on login
+Added message: registration complete
+Added autofocus on name on register, email on login, and password after registration succesful
+
+============================ v1.11 03.04.2018
+Added working login error showing
+Added working sessions and cookies on register, and login
+Added working register error showing
+
+============================ v1.1 27.03.2018
+Added php call procedures
+Still working on php session login and "keep me authentificated"
+
+============================ v1.0 26.03.2018
+Changed DB column names
+Added login mysql procedure 
+Added php call procedure (Has error)
+
