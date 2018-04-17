@@ -126,7 +126,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/index.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <title>Login</title>
     <!-- Scriptul in care se afla ready function-ul de jquery. E pus aici ca sa vada php-ul definit -->
@@ -135,7 +135,7 @@
 <body>
     </div> <!-- End div container alert-box -->
     <div class="container">
-        <h2 class="mb-5 text-center">Bun venit </h2>
+        <h2 class="mb-5 text-center">Logo Romprix </h2>
         <!-- Aici sunt afisate erorile. Initial este d-none, functia de jquery o sa schimbe asta daca exista erori -->
         <div class="error-alert-box col mb-2"> 
             <p class="mb-0"></p>
@@ -172,6 +172,9 @@
     // Afisam erorile daca exista dintr-o verificare trecuta
     // Daca nu e setata eroarea, folosim 0 ca parametru in loc de 1, iar jquery ul o sa dea clasa d-block sau d-none in functie de el.
     // Functia se afla in scriptul js/scripts/login_jq_readyfunc.js 
+
+
+
     if(isset($_SESSION['error']))
     {
         echo "<script> show_input_error('".$_SESSION['error']."', 1); 
