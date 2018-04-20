@@ -34,7 +34,17 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <link rel="stylesheet" href="../css/home.css">
-    <title>Welcome</title>
+    <!-- Datatables -->
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/17.2.7/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/17.2.7/css/dx.light.css" />
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/17.2.7/js/dx.all.js"></script>
+
+    <!-- Google charts gantt -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="../js/scripts/google_charts_gantt_draw.js"></script>
+    <!-- Ready function -->
+    <script src="../js/scripts/contracts.js"></script>
+    <title>Contracts</title>
 </head>
 <body>
     <div class="container">
@@ -46,8 +56,8 @@
                 <!-- <div class="col-3 d-none d-lg-block text-center">
                     <p class="mb-0">Bine ai venit!</p>
                 </div> -->
-                <div class="display-user col-6 col-sm-4 d-flex justify-content-end align-items-center">
-                    <div class="d-inline-block">
+                <div class="display-user col col-sm-6 col-md-5 col-lg-3 d-flex justify-content-between justify-content-sm-end align-items-center">
+                    <div class="d-inline-block col">
                         <img src="https://png.icons8.com/ios/50/000000/gender-neutral-user-filled.png">
                         <span>Gabriel Timisica
                             <?php 
@@ -57,7 +67,7 @@
                     </div> 
 
                     <!-- <img class="menu-icon d-none d-sm-inline-block align-items-center" src="https://png.icons8.com/ios-glyphs/50/000000/menu.png"> -->
-                    <div class="dropdown-block d-none d-sm-inline-block align-items-center">
+                    <div class="dropdown-block d-sm-inline-block align-items-center">
                         <img class="menu-icon" style="" src="https://png.icons8.com/ios-glyphs/50/000000/menu.png">
                         <ul class="dropdown-menu1 not-visible">
                             <li>Settings</li>
@@ -65,48 +75,17 @@
                         </ul>    
                     </div>
                 </div> <!-- end div display-user -->
-                <div class="dropdown-block d-block d-sm-none">
-                    <!-- <img class="menu-icon" style="" src="https://png.icons8.com/ios-glyphs/50/000000/menu.png">
-                    <ul class="dropdown-menu1 not-visible">
-                        <li class="text-align" >Settings</li>
-                        <li>Logout</li>
-                    </ul>     -->
-                    <img class="menu-icon" style="" src="https://png.icons8.com/ios-glyphs/50/000000/menu.png">
-                        <ul class="dropdown-menu1 not-visible">
-                            <li>Settings</li>
-                            <li class="loggout-btt">Logout</li>
-                        </ul>  
-                </div>
                 
             </div> <!-- end div d-flex -->
         </div> <!-- end div topnav -->
-        <div class="row d-flex justify-content-around">
-            <a href="contracts.php" class="col-3 menu-item text-center">
-                <p class="align-content-center">Contracts</p>
-            </a>
-            <a href="#" class="col-3 menu-item text-center unavailable">
-                <p class="align-content-center">Projects</p>
-            </a>
-            <a href="#" class="col-3 menu-item text-center unavailable">
-                <p class="align-content-center">Unavailable</p>
-            </a>
-        </div> <!--  end div row -->
-        <div class="row d-flex justify-content-around">
-            <a href="#" class="col-3 menu-item text-center unavailable">
-                <p class="align-content-center">Unavailable</p>
-            </a>
-            <a href="#" class="col-3 menu-item text-center unavailable">
-                <p class="align-content-center">Unavailable</p>
-            </a>
-            <a href="#" class="col-3 menu-item text-center unavailable">
-                <p class="align-content-center">Unavailable</p>
-            </a>
-        </div> <!--  end div row -->
+
+
+
+        <!-- Content - - - - - - - - - - - - - - - - - -->
+        <div id='dataGrid'></div>
+        <div id='chart_div'></div>
     </div> <!-- END container -->
 </body>
-
-<!-- Ready function -->
-<script src="../js/scripts/welcome-page.js"></script>
 
 </html>
 

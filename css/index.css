@@ -2,7 +2,6 @@
 body {
     padding-top: 10vh;
     background-color: #031927;
-    
     font-size: 85%;
 }
 
@@ -24,11 +23,11 @@ h2 {
  /* Boxul in care sunt afisate greselile de input */
 .error-alert-box {
     border: 1px solid red;
-    background-color: #FFCCCB;
+    background-color: #BA1200;
 }
 .error-alert-box > p {
     text-align: center;
-    color: #C30D0B;
+    color: white;
 }
 
 /* FORM 
@@ -60,14 +59,14 @@ form > div > input:valid + label {
 }
 
 input:focus + label {
-    color: #C30D0B;
-    border-color: #C30D0B;
-    outline-color: #C30D0B;
+    color: #aa4b4d;
+    border-color: #aa4b4d;
+    outline-color: #aa4b4d;
 }
 input:focus {
-    border-color: #C30D0B;
-    color: #C30D0B;
-    outline-color: #C30D0B;
+    border-color: #aa4b4d;
+    color: #aa4b4d;
+    outline-color: #aa4b4d;
 }
 
 /* Input type text e facut pentru prenume, nume. Cele care nu au un tip predefinit ca email sau parola */
@@ -96,16 +95,23 @@ input[type="text"] {
 input[name="email"]:focus,
 input[type="password"]:focus,
 input[type="text"]:focus {
-    border-color: #BA1200;
+    border-color: #aa4b4d;
 }
 
 
 button[type="submit"] {
     height: 40px;
     border-radius: 3px;
-    background-color: #BA1200;
+    background-color: #aa4b4d;
     border: none;
     margin-bottom: 20px;
+    transition: background-color 0.5s ease, color 0.5s ease;
+    outline: 0;
+}
+
+button:focus {
+    background-color: rgb(51, 51, 51);
+    color: #aa4b4d;
 }
 
 a:active,
@@ -117,7 +123,7 @@ a:hover {
 }
 
 a:focus {
-    outline-color: #C30D0B;
+    outline-color: #aa4b4d;
 }
 
 div.checkbox:hover {
