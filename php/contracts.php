@@ -83,7 +83,7 @@
 
         <!-- Content - - - - - - - - - - - - - - - - - -->
         <div id='dataGrid'></div>
-        <div id='chart_div'></div>
+        <div id='chart_div' style='width:100%'></div>
     </div> <!-- END container -->
 </body>
 

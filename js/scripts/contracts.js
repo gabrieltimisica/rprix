@@ -64,6 +64,16 @@ function draw_table(table_data)
     });
 }
 
+function new_colors(contract_status)
+{
+    var target = '';
+    for (var i = 0 ; i < contract_status.length ; i++)
+    {
+        $('rect:nth-child(' + i + ')').css("fill","red");
+    }
+    
+}
+
 // luam contractele din BD
 function get_table_data()
     {
@@ -84,7 +94,7 @@ function get_table_data()
 
                 // chart_data e un obiect care contine informatia structurata array array pe care o trimitem pt desenarea chartului
                 var chart_data = new Array();
-                for (var k=0; k<array.length;k++)
+                for (var k = 0; k < array.length ; k++)
                 {
                     chart_data[k] = new Array();
                 }
@@ -94,11 +104,11 @@ function get_table_data()
                     j = 0;
                     chart_data[i][j++] =  array[i].ContractID; 
                     chart_data[i][j++] = array[i].ContractName; 
-                    chart_data[i][j++] = 'spring'; // resources 
+                    chart_data[i][j++] = ''; // resources 
                     chart_data[i][j++] = array[i].ContractBeginDate;
                     chart_data[i][j++] = array[i].ContractExpireDate;
                     chart_data[i][j++] = null; // durata, dar o calculeaza singur deci ii dau null
-                    chart_data[i][j++] = 100; // toate completate 100%
+                    chart_data[i][j++] = i * 20; // toate completate 100%
                     chart_data[i][j++] = null; // dependente
                 }
 
@@ -107,6 +117,14 @@ function get_table_data()
                 // Acum desenam tabelul
                 draw_table(array);
                 ceva_draw(chart_data);
+
+                //noi culori in functie de status
+                var color_array = [];
+                for(var i = 0; i < array.length; i ++)
+                {
+                    color_array[i] = array[i].ContractStatusID;
+                }
+                new_colors(color_array);
 
             },
             error: function(xhr, status, text)
