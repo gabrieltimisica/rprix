@@ -45,16 +45,18 @@ function draw_table(table_data)
     $("#dataGrid").dxDataGrid({
         dataSource: table_data,
         columns: [
-                {
-                    dataField:'ContractID', 
-                    caption:'George Baros'
-                },
-                 'ContractType',
-                 'ContractAddDate'
-                //  'Expire Date',
-                //  'Status',
-                //  'Remindere'
-                 ],
+            {
+                caption:'ID',
+                cellTemplate: function(cellElement, cellInfo) {
+                    cellElement.text(cellInfo.row.rowIndex + 1) // + 1 ca sa inceapa de la 1 ordinea
+                }
+            },
+            'ContractType',
+            'ContractAddDate'
+            //  'Expire Date',
+            //  'Status',
+            //  'Remindere'
+                ],
         editing: {
             allowAdding: true,
             allowDeleting:true,
