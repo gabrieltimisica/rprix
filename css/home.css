@@ -137,14 +137,6 @@ a.menu-item:hover {
     margin-bottom: 40px;
 }
 
-path:nth-child(1) {
-    fill: indigo;
-
-}
-path:nth-child(2) {
-    fill: indigo;
-
-}
 
 /* sub path se afla rect */
 

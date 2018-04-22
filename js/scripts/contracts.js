@@ -1,5 +1,4 @@
 $(function() {
-
     get_table_data();
     // Logout button
     $(".loggout-btt").click(function() {  
@@ -64,15 +63,7 @@ function draw_table(table_data)
     });
 }
 
-function new_colors(contract_status)
-{
-    var target = '';
-    for (var i = 0 ; i < contract_status.length ; i++)
-    {
-        $('rect:nth-child(' + i + ')').css("fill","red");
-    }
-    
-}
+
 
 // luam contractele din BD
 function get_table_data()
@@ -93,38 +84,44 @@ function get_table_data()
                 });
 
                 // chart_data e un obiect care contine informatia structurata array array pe care o trimitem pt desenarea chartului
+                // definim chart_data
                 var chart_data = new Array();
-                for (var k = 0; k < array.length ; k++)
+                for (var k = 0; k < array.length ; k ++)
                 {
                     chart_data[k] = new Array();
                 }
+                
+                // Aici, memoram in chart_data coloanele pe care vrem sa i le trimitem graficului gantt intr-o ordine stabilita de chart
                 var j = 0;
                 for(var i = 0; i < array.length  ; i++)
                 {
                     j = 0;
                     chart_data[i][j++] =  array[i].ContractID; 
                     chart_data[i][j++] = array[i].ContractName; 
-                    chart_data[i][j++] = ''; // resources 
+                    // Din motive de afisare schimbam din idstatus int in string
+                    switch(array[i].ContractStatusID)
+                    {
+                        case 1:
+                            chart_data[i][j++] = 'Active';
+                            break;
+                        case 2:
+                            chart_data[i][j++] = 'Expired';
+                            break;
+                        case 3:
+                            chart_data[i][j++] = 'Deleted';
+                            break;
+                    } // end switch
                     chart_data[i][j++] = array[i].ContractBeginDate;
                     chart_data[i][j++] = array[i].ContractExpireDate;
                     chart_data[i][j++] = null; // durata, dar o calculeaza singur deci ii dau null
-                    chart_data[i][j++] = i * 20; // toate completate 100%
+                    chart_data[i][j++] = null; // percent done
                     chart_data[i][j++] = null; // dependente
-                }
-
-                console.log(chart_data);
+                } // end for
 
                 // Acum desenam tabelul
                 draw_table(array);
-                ceva_draw(chart_data);
+                gantt_chart_draw(chart_data);
 
-                //noi culori in functie de status
-                var color_array = [];
-                for(var i = 0; i < array.length; i ++)
-                {
-                    color_array[i] = array[i].ContractStatusID;
-                }
-                new_colors(color_array);
 
             },
             error: function(xhr, status, text)
