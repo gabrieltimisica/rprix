@@ -47,21 +47,35 @@ function draw_table(table_data)
         columns: [
             {
                 caption:'ID',
-                cellTemplate: function(cellElement, cellInfo) {
+                cellTemplate: function(cellElement, cellInfo)
+                {
                     cellElement.text(cellInfo.row.rowIndex + 1) // + 1 ca sa inceapa de la 1 ordinea
                 }
             },
-            'ContractType',
-            'ContractAddDate'
-            //  'Expire Date',
-            //  'Status',
-            //  'Remindere'
-                ],
+            {
+                caption:'Contract Name',
+                dataField:'ContractName'
+            },
+            {
+                caption:'Client',
+                dataField:'ContractClientCode'
+            },
+            {
+                caption:'Status',
+                dataField:'ContractStatusID'
+            },
+            {
+                caption:'Expire Date',
+                dataField:'ContractExpireDate'
+            }
+        ],
+        alignment: 'left',
         editing: {
             allowAdding: true,
             allowDeleting:true,
             allowUpdating:true
         }
+        
     });
 }
 
@@ -100,19 +114,7 @@ function get_table_data()
                     j = 0;
                     chart_data[i][j++] =  array[i].ContractID; 
                     chart_data[i][j++] = array[i].ContractName; 
-                    // Din motive de afisare schimbam din idstatus int in string
-                    switch(array[i].ContractStatusID)
-                    {
-                        case 1:
-                            chart_data[i][j++] = 'Active';
-                            break;
-                        case 2:
-                            chart_data[i][j++] = 'Expired';
-                            break;
-                        case 3:
-                            chart_data[i][j++] = 'Deleted';
-                            break;
-                    } // end switch
+                    chart_data[i][j++] = 'Romprix';  // resources
                     chart_data[i][j++] = array[i].ContractBeginDate;
                     chart_data[i][j++] = array[i].ContractExpireDate;
                     chart_data[i][j++] = null; // durata, dar o calculeaza singur deci ii dau null
