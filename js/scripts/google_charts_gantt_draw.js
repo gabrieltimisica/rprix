@@ -26,11 +26,19 @@ function gantt_chart_draw(chart_data)
         var options = {
             height: 400,
             gantt: {
-                trackHeight: 30
+                trackHeight: 30,
+                palette: [{
+                      "color": "#c14144",
+                      "dark": "#00CC00",
+                      "light": "#00CC00"
+                    }]
             },
             backgroundColor: {
                 'fill': '#9DD1F1'
             },
+            labelStyle: {
+                color: 'black'
+            }
         };
 
         var chart = new google.visualization.Gantt(document.getElementById('chart_div'));

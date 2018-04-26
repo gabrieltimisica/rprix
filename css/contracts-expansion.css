@@ -1,0 +1,16 @@
+
+.container1 {
+    padding: 0;
+    background-color: white;
+}
+
+.topnav {
+    position: fixed;
+    z-index: 999;
+}
+
+h3.page-header {
+    padding-top: 70px;
+    margin-bottom: 50px;
+}
+

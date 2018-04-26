@@ -78,10 +78,10 @@
             if($procedure_return->Username && $pw == $procedure_return->Password)
             {
                 $_SESSION['username'] = $procedure_return->Username;
-                // SCHIMBA PROCEDURA SA RETURNEZE MAI MULTE CHESTII
-                $_SESSION['nume'] = $procedure_return->nume;
-                $_SESSION['prenume'] = $procedure_return->prenume;
-                $_SESSION['privilegiu'] = $procedure_return->privilegiu;
+                $_SESSION['userID'] = $procedure_return->UserID;
+                // $_SESSION['nume'] = $procedure_return->nume;
+                // $_SESSION['prenume'] = $procedure_return->prenume;
+                // $_SESSION['privilegiu'] = $procedure_return->privilegiu;
                 unset($_SESSION['username_value_attribute']);
                 echo "<script> window.location.replace('php/home.php'); </script>"; // e in loc de header pentru ca headerul il poti pune doar in.... header sus :))
             } else // daca e gresit

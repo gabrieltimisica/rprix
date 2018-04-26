@@ -7,7 +7,7 @@ body {
     border: 1px solid black;
     background-color: #9DD1F1;
     padding: 0;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 p {
@@ -140,6 +140,21 @@ a.menu-item:hover {
 
 /* sub path se afla rect */
 
+.test {
+    width: 30px;
+    height: 50px;
+    border: 1px solid red;
+    position: absolute;
+    z-index: 2;
+}
+
+.dataGrid-custom-header {
+    height: 50px;
+    margin-bottom: 0;
+    background-color: white;
+    border-bottom: 1px solid lightgrey;
+    border-top: 1px solid lightgrey;
+}
 
 
 
