@@ -94,5 +94,10 @@
     </div> <!-- END container -->
 </body>
 
+
+<script>
+    // Aici salvez in variabila useridfromsession id-ul utilizatorului ca sa nu dau ajax mai tarziu, ca sa il trimit cand dau delete prin ajax sa stim cine a facut modificarea
+    var userID_fromSession = <?php echo $_SESSION['userID']; ?>;
+</script>
 </html>
 

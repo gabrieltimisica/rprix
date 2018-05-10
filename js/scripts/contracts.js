@@ -27,31 +27,11 @@ $(function() {
 
 }); // END READY FUNCTION
 
-// variabila globala
-var json_filter = {
-        'contractStatus': {
-            'active': 1,
-            'expired': 1,
-            'extended': 0,
-            'deleted': 0
-        },
-        'fromDate': '2016-10-06 00:00',
-        'toDate': '2018-10-06 12:00'
-};
 
 // Aici este apelat devextreme si creeaza tabelul
 function draw_table(table_data) 
 {
     $("#dataGrid").dxDataGrid({
-
-        // Proprietati:
-        // Search coloane
-        // Resize coloane
-        // Reorder coloane
-        // Autowidth la coloane
-        // Iti selectezi propriile coloane
-        
-
         dataSource: table_data,
         columns: [
             {
@@ -75,13 +55,14 @@ function draw_table(table_data)
             },
             {
                 caption:'Client',
-                dataField:'ContractClientCode',
+                dataField:'ClientName',
+                alignment: 'left',
                 allowGrouping: true
             },
             {
                 caption:'Status',
-                dataField:'ContractStatusID',
-                alignment: 'left',
+                dataField:'StatusName',
+                alignment: 'center',
                 allowGrouping: true
             },
             {
@@ -109,12 +90,33 @@ function draw_table(table_data)
                 dataField:'ContractShortDescription',
                 visible: false
             },
+            {
+                caption:'Client Code',
+                dataField:'ContractClientCode',
+                allowGrouping: true,
+                visible: false
+            }
 
         ],
         editing: {
             allowAdding: true,
             allowDeleting:true,
-            allowUpdating:true
+            allowUpdating:true,
+            mode: 'popup',
+            popup: {
+                title: "Contract edit",
+                showTitle: true,
+                width: 700,
+                height: 500,
+                position: {
+                    my: "center",
+                    at: "center",
+                    of: window
+                }
+            },
+            texts: {
+                deleteRow: 'Cancel' // textul delete e inlocuit cu cancel
+            }
         },
         columnChooser: {
             allowSearch: true,
@@ -161,23 +163,39 @@ function draw_table(table_data)
             enabled: true
         },
         onRowRemoved: function(e){
-            console.log("asdasd");
-            console.log(e.data.ContractID, );
-            // var json_toSend = 
-            // $.ajax({
-            //     type: "POST",
-            //     url: "phpScripts/alter_contracts_dxDataGrid.php",
-            //     data: {myData: JSON.stringify(json_filter)}, // json_filter e global
-            //     dataType: "json",
-            //     success: function(returned_data) 
-            //     {
-
-            //     }
-            // }); // end ajax
+            console.log(e.data.ContractID, userID_fromSession);
+            var json_toSend = {
+                "contractID": e.data.ContractID,
+                "userID_whoDeletedTheContract": userID_fromSession
+            };
+            $.ajax({
+                type: "POST",
+                url: "phpScripts/delete_contracts_dxDataGrid.php",
+                data: {myData: JSON.stringify(json_toSend)}, // json_filter e global
+                dataType: "json",
+                success: function(returned_data) 
+                {
+                    console.log("merge");
+                },
+                error: function() {
+                    console.log("nu merge stergerea");
+                }
+            }); // end ajax
+        },
+        // https://www.devexpress.com/Support/Center/Question/Details/T451111/dxdatagrid-how-to-get-row-values-on-editing-adding-of-a-row
+        // site ca sa vezsi edit-ul
+        stateStoring: {
+            enabled: true,
+            type: 'SessionStorage'
+        },
+        onRowInserted: function(e) {
+            console.log(e.data.row);
+            console.log("asd"); 
         }
 
-    });
+        
 
+    });
 }
 
 
@@ -185,11 +203,10 @@ function draw_table(table_data)
 // luam contractele din BD
 function get_table_data()
     {
-        console.log(json_filter);
         $.ajax({
             type: "POST",
             url: "phpScripts/get_table_data.php",
-            data: {myData: JSON.stringify(json_filter)}, // json_filter e global
+            data: {myData: JSON.stringify({"nuConteazaCeEAici": null})}, // nu avem data
             dataType: "json",
             success: function(returned_data) 
             {

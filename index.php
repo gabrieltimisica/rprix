@@ -9,7 +9,7 @@
     {
         $_SESSION["cookie_exp_date"] = time() + 14 * 24 * 3600; // aici e initiata pentru prima oara
     } else // Are deja sessionu deschis / a folosit cookie
-    {
+    {   
         $username = $_SESSION['username'];
         $connection = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
         $procedure_return = $connection->prepare('CALL rpx_sp_VerifyUser(?)');
@@ -17,7 +17,7 @@
         $procedure_return->execute();
         $procedure_return = $procedure_return->get_result();
         $procedure_return = mysqli_fetch_object($procedure_return);
-        if ($procedure_return->Username) // exista in DB
+        if ($procedure_return->LoginName) // exista in DB
         {
             if(isset($_COOKIE['c_id'])) // daca a folosit cookie, il updatam cu acelasi expire si un id diferit
                 setcookie("c_id", session_id(), $_SESSION["cookie_exp_date"], '/', "", FALSE, TRUE);
@@ -75,9 +75,9 @@
             $procedure_return = $procedure_return->get_result();
             $procedure_return = mysqli_fetch_object($procedure_return);
             // if($procedure_return->Username && password_verify($pw , $procedure_return->Pw)) // exista contul cu username si parola corecta
-            if($procedure_return->Username && $pw == $procedure_return->Password)
+            if($procedure_return->LoginName && $pw == $procedure_return->Password)
             {
-                $_SESSION['username'] = $procedure_return->Username;
+                $_SESSION['username'] = $procedure_return->LoginName;
                 $_SESSION['userID'] = $procedure_return->UserID;
                 // $_SESSION['nume'] = $procedure_return->nume;
                 // $_SESSION['prenume'] = $procedure_return->prenume;
@@ -92,21 +92,6 @@
         }
     }
 
-    /**
-     * If PHP_SELF is used in your page then a user can enter a slash (/) 
-     * and then some Cross Site Scripting (XSS) commands to execute.
-     * Most data that comes from a $_POST[""] is a string. 
-     * Malicious JavaScript code can be added inside the <script> tag!
-     * trim($input_data);                Strips unnecessary characters (extra space, tab, newline) from the user input data
-     * stripslashes($input_data);        Remove backslashes (\) from the user input data
-     * htmlspecialchars($input_data);    If a user tries to submit the following in a text field:
-     *                                   <script>location.href('http://www.hacked.com')</script>
-     *                                   This would not be executed, because it would be saved as HTML escaped code, like this:
-     *                                   &lt;script&gt;location.href('http://www.hacked.com')&lt;/script&gt;
-     * @param  $input_data  Data that comes from the $_POST[""] after a submit
-     * @return $input_data  Returns the data 
-     * @link    https://www.w3schools.com/php/php_form_validation.asp
-     */
     function input_test($input_data)
     { 
         $input_data = trim($input_data);
