@@ -13,11 +13,16 @@
     {
         case 'deleteContract':
             $procedure = $connection->prepare('CALL rpx_sp_DeleteContract(?, ?)');
-            $procedure->bind_param("ii",$data_sent->contractID, $data_sent->userID); // userID este cine a modificat contractul
+            $procedure->bind_param("ii",$data_sent->contractID, $data_sent->userID);
+            break;
         case 'editContract':
             $procedure = $connection->prepare('CALL rpx_sp_DeleteContract(?, ?)');
-            $procedure->bind_param("ii",$data_sent->contractID, $data_sent->userID); // userID este cine a modificat contractul
-
+            $procedure->bind_param("ii",$data_sent->contractID, $data_sent->userID);
+            break;
+        case 'addContract':
+            $procedure = $connection->prepare('CALL rpx_sp_DeleteContract(?, ?)');
+            $procedure->bind_param("ii",$data_sent->contractID, $data_sent->userID); 
+            break;
     }
 
 
@@ -29,3 +34,5 @@
     echo 1;
     $connection->close();
 ?>
+
+

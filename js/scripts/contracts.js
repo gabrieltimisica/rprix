@@ -27,6 +27,21 @@ $(function() {
 }); // END READY FUNCTION
 
 
+var states = [{
+    "ID": 1,
+    "Name": "Active"
+}, {
+    "ID": 2,
+    "Name": "Canceled"
+}, {
+    "ID": 3,
+    "Name": "Closed"
+}, {
+    "ID": 4,
+    "Name": "Preliminary"
+}];
+
+
 // Aici este apelat devextreme si creeaza tabelul
 function draw_table(table_data) 
 {
@@ -59,10 +74,44 @@ function draw_table(table_data)
                 allowGrouping: true
             },
             {
+                caption:'Organisation',
+                dataField:'OrganisationName',
+                allowGrouping: true
+            },
+            {
+                caption:'Contract Type',
+                dataField:'ContractType',
+                allowGrouping: true
+            },
+            {
+                // Apare in tabel, nu apare la add / edit
                 caption:'Status',
                 dataField:'StatusName',
                 alignment: 'center',
                 allowGrouping: true
+            },
+            {
+                // Status dropdown care apare doar in edit / add. Pentru afisare in tabel avem altul
+                // Nu il putem vedea in tabel
+                caption:'Status',
+                alignment: 'center',
+                visible: false,
+                showInColumnChooser: false,
+                lookup: {
+                    dataSource: states,
+                    displayExpr: "Name",
+                    valueExpr: "ID"
+                }
+            },
+            {
+                caption:'Contract Number IN',
+                dataField:'ContractNumberIn',
+                visible: false
+            },
+            {
+                caption:'Contract Number OUT',
+                dataField:'ContractNumberOut',
+                visible: false
             },
             {
                 caption:'Expire Date',
@@ -88,14 +137,7 @@ function draw_table(table_data)
                 caption:'Short Description',
                 dataField:'ContractShortDescription',
                 visible: false
-            },
-            {
-                caption:'Client Code',
-                dataField:'ContractClientCode',
-                allowGrouping: true,
-                visible: false
             }
-
         ],
         editing: {
             allowAdding: true,
@@ -105,15 +147,17 @@ function draw_table(table_data)
             form: {
                 customizeItem: function(item) {
                     console.log(item);
-                    if(item.dataField == "ContractID" || item.label.text == "Row Number") 
+                    if (item.dataField == "ContractID" ||
+                         item.label.text == "Row Number" ||
+                         item.dataField == "ContractAddDate" ||
+                         item.dataField == "StatusName") 
                     {
                         item.visible = false;
                     }
-                    // if (item.dataField == "ContractShortDescription")
-                    // { 
-                    //     // console.log(item.editorOptions);
-                    //     item.editorOptions.height = 300;
-                    // }          
+                    if (item.label.text == "Contract Status")
+                    {
+                        item.visible = true;
+                    }
                 } // end customizeitem
             },  
             popup: {
@@ -171,7 +215,7 @@ function draw_table(table_data)
             pageSize: 20
         },
         pager: {
-            allowedPageSizes: "auto",
+            allowedPageSizes: [10, 50, 100, 200, 500],
             infoText: "Page {0} of {1}",
             showInfo: true,
             showNavigationButtons: true,
@@ -184,7 +228,8 @@ function draw_table(table_data)
        
         stateStoring: {
             enabled: true,
-            type: 'SessionStorage'
+            type: 'SessionStorage',
+            ignoreColumnOptionNames: []
         },
         onRowInserted: function(e) {
             console.log(e.data);
@@ -255,6 +300,7 @@ function get_table_data()
         dataType: "json",
         success: function(returned_data) 
         {
+            console.log(returned_data);
             // Din obj de obj facem vector de object
             var array = $.map(returned_data, function(value, index) {
                 return [value];

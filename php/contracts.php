@@ -36,11 +36,10 @@
     <link rel="stylesheet" href="../css/home.css">
     <!-- Este folosit in mare parte css-ul de la home, dar vreau sa dau overwrite la cateva deci pun unul separat dupa -->
     <link rel="stylesheet" href="../css/contracts-expansion.css">
-    <!-- Datatables -->
+    <!-- Devextreme --> 
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/17.2.7/js/dx.all.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/17.2.7/css/dx.common.css" />
     <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/17.2.7/css/dx.light.css" />
-    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/17.2.7/js/dx.all.js"></script>
-
     <!-- Ready function -->
     <script src="../js/scripts/contracts.js"></script>
     <title>Contracts</title>
