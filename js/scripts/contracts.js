@@ -103,8 +103,22 @@ function draw_table(table_data)
             allowDeleting:true,
             allowUpdating:true,
             mode: 'popup',
+            form: {
+                customizeItem: function(item) {
+                    console.log(item);
+                    if(item.dataField == "ContractID" || item.label.text == "Row Number") 
+                    {
+                        item.visible = false;
+                    }
+                    // if (item.dataField == "ContractShortDescription")
+                    // { 
+                    //     // console.log(item.editorOptions);
+                    //     item.editorOptions.height = 300;
+                    // }          
+                } // end customizeitem
+            },  
             popup: {
-                title: "Contract edit",
+                title: "Add contract",
                 showTitle: true,
                 width: 700,
                 height: 500,
@@ -115,7 +129,8 @@ function draw_table(table_data)
                 }
             },
             texts: {
-                deleteRow: 'Cancel' // textul delete e inlocuit cu cancel
+                deleteRow: 'Cancel', // textul delete e inlocuit cu cancel
+                addRow: "Add contract"// 
             }
         },
         columnChooser: {
@@ -141,7 +156,12 @@ function draw_table(table_data)
         export: {
             allowExportSelectedData: true,
             enabled: true,
-            excelFilterEnabled: true
+            excelFilterEnabled: true,
+            fileName:"Contracts",
+            texts: {
+                exportAll: "Export all data",
+                exportTo: "Export"
+            }
         },
         groupPanel: {
             visible: true
@@ -161,6 +181,23 @@ function draw_table(table_data)
         },
         masterDetail: {
             enabled: true
+        },
+       
+        stateStoring: {
+            enabled: true,
+            type: 'SessionStorage'
+        },
+        onRowInserted: function(e) {
+            // console.log(e.data.row);
+            // console.log("asd"); 
+            
+        },
+        onEditingStart: function(e) {
+            // settimeout ca sa aiba popup-ul timp sa apara mai intai, ca sa aiba ce sa modifice
+            setTimeout(function(){
+                // Div-ul in care se afla titlul de la popup-ul de editare
+                $(".dx-datagrid-edit-popup .dx-toolbar-label .dx-item-content div").text("Edit contract");
+            });   
         },
         onRowRemoved: function(e){
             console.log(e.data.ContractID, userID_fromSession);
@@ -182,17 +219,18 @@ function draw_table(table_data)
                 }
             }); // end ajax
         },
+        // Event atat pentru edit, cat si add
+        onEditorPrepared: function(e) {
+            if(e.dataField == "ContractShortDescription")
+            {
+                e.editorOptions.height = 1500;
+                e.editorOptions.width = 1500;
+                e.editorOptions.colSpan = 3;
+                console.log(e);
+            }
+        }
         // https://www.devexpress.com/Support/Center/Question/Details/T451111/dxdatagrid-how-to-get-row-values-on-editing-adding-of-a-row
         // site ca sa vezsi edit-ul
-        stateStoring: {
-            enabled: true,
-            type: 'SessionStorage'
-        },
-        onRowInserted: function(e) {
-            console.log(e.data.row);
-            console.log("asd"); 
-        }
-
         
 
     });
@@ -255,6 +293,5 @@ function get_table_data()
             }
         }); // end ajax
     }
-
 
 
