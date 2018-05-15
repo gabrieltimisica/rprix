@@ -17,7 +17,6 @@ $(function() {
     $(".menu-icon").click(function(){
         $(".menu-icon ~ .dropdown-menu1").toggleClass("not-visible");
     });
-
     $(window).click(function() {
         if(!$(".menu-icon").is(':hover') && !$("ul.dropdown-menu1").is(':hover'))
         {
@@ -188,9 +187,22 @@ function draw_table(table_data)
             type: 'SessionStorage'
         },
         onRowInserted: function(e) {
-            // console.log(e.data.row);
-            // console.log("asd"); 
+            console.log(e.data);
+            var json_toSend = {
+                "data": e.data, // informatia despre contract adaugata
+                "userID": userID_fromSession,
+                "action": "addContract"
+            };
+            contracts_action_editAddDelete(json_toSend);
             
+        },
+        onRowUpdating: function(e) {
+            var json_toSend = {
+                "data": e.oldData, // oldData este un obiect care contine toti parametrii din baza de date, cu update-ul facut
+                "userID": userID_fromSession,
+                "action": "editContract"
+            };
+            contracts_action_editAddDelete(json_toSend);
         },
         onEditingStart: function(e) {
             // settimeout ca sa aiba popup-ul timp sa apara mai intai, ca sa aiba ce sa modifice
@@ -203,31 +215,10 @@ function draw_table(table_data)
             console.log(e.data.ContractID, userID_fromSession);
             var json_toSend = {
                 "contractID": e.data.ContractID,
-                "userID_whoDeletedTheContract": userID_fromSession
+                "userID": userID_fromSession,
+                "action": "deleteContract"
             };
-            $.ajax({
-                type: "POST",
-                url: "phpScripts/delete_contracts_dxDataGrid.php",
-                data: {myData: JSON.stringify(json_toSend)}, // json_filter e global
-                dataType: "json",
-                success: function(returned_data) 
-                {
-                    console.log("merge");
-                },
-                error: function() {
-                    console.log("nu merge stergerea");
-                }
-            }); // end ajax
-        },
-        // Event atat pentru edit, cat si add
-        onEditorPrepared: function(e) {
-            if(e.dataField == "ContractShortDescription")
-            {
-                e.editorOptions.height = 1500;
-                e.editorOptions.width = 1500;
-                e.editorOptions.colSpan = 3;
-                console.log(e);
-            }
+            contracts_action_editAddDelete(json_toSend);
         }
         // https://www.devexpress.com/Support/Center/Question/Details/T451111/dxdatagrid-how-to-get-row-values-on-editing-adding-of-a-row
         // site ca sa vezsi edit-ul
@@ -236,62 +227,47 @@ function draw_table(table_data)
     });
 }
 
-
+// Functie apelata din eventul de add/edit/delete contracts din dxdatagrid 
+function contracts_action_editAddDelete(json_toSend) 
+{
+    $.ajax({
+        type: "POST",
+        url: "phpScripts/addEditDelete_contracts_fromDB.php",
+        data: {myData: JSON.stringify(json_toSend)}, // json_filter e global
+        dataType: "json",
+        success: function(returned_data) 
+        {
+            console.log("merge");
+        },
+        error: function() {
+            console.log("nu merge stergerea");
+        }
+    }); // end ajax
+}
 
 // luam contractele din BD
 function get_table_data()
-    {
-        $.ajax({
-            type: "POST",
-            url: "phpScripts/get_table_data.php",
-            data: {myData: JSON.stringify({"nuConteazaCeEAici": null})}, // nu avem data
-            dataType: "json",
-            success: function(returned_data) 
-            {
-                console.log(returned_data);
-                
-                // Din obj de obj facem vector de object
-                var array = $.map(returned_data, function(value, index) {
-                    return [value];
-                });
+{
+    $.ajax({
+        type: "POST",
+        url: "phpScripts/get_table_data.php",
+        data: {myData: JSON.stringify({"nuConteazaCeEAici": null})}, // nu avem data
+        dataType: "json",
+        success: function(returned_data) 
+        {
+            // Din obj de obj facem vector de object
+            var array = $.map(returned_data, function(value, index) {
+                return [value];
+            });
 
-                // chart_data e un obiect care contine informatia structurata array array pe care o trimitem pt desenarea chartului
-                // definim chart_data
-                var chart_data = new Array();
-                for (var k = 0; k < array.length ; k ++)
-                {
-                    chart_data[k] = new Array();
-                }
-                
-                // Aici, memoram in chart_data coloanele pe care vrem sa i le trimitem graficului gantt intr-o ordine stabilita de chart
-                var j = 0;
-                for(var i = 0; i < array.length  ; i++)
-                {
-                    j = 0;
-                    chart_data[i][j++] = array[i].ContractID; 
-                    chart_data[i][j++] = array[i].ContractName; 
-                    chart_data[i][j++] = 'Romprix';  // resources
-                    chart_data[i][j++] = array[i].ContractBeginDate;
-                    chart_data[i][j++] = array[i].ContractExpireDate;
-                    chart_data[i][j++] = null; // durata, dar o calculeaza singur deci ii dau null
-                    chart_data[i][j++] = 100; // percent done
-                    if(array[i].ContractParentID != null) // dependente
-                    {
-                        chart_data[i][j++] = array[i].ContractParentID.toString(); // daca avem, primim id contractului extins si il trecem in string pentru ca asta e formatul chartului
-                    } else chart_data[i][j++] = '';
-                } // end for
-
-                // Acum desenam tabelul
-                draw_table(array);
-                gantt_chart_draw(chart_data);
-
-
-            },
-            error: function(xhr, status, text)
-            {
-                    console.log(xhr.status,"-------",status,"---------",text);
-            }
-        }); // end ajax
-    }
+            // Acum desenam tabelul
+            draw_table(array);
+        },
+        error: function(xhr, status, text)
+        {
+                console.log(xhr.status,"-------",status,"---------",text);
+        }
+    }); // end ajax
+}
 
 

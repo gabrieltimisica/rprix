@@ -41,9 +41,6 @@
     <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/17.2.7/css/dx.light.css" />
     <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/17.2.7/js/dx.all.js"></script>
 
-    <!-- Google charts gantt -->
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="../js/scripts/google_charts_gantt_draw.js"></script>
     <!-- Ready function -->
     <script src="../js/scripts/contracts.js"></script>
     <title>Contracts</title>
@@ -85,12 +82,8 @@
 
         <!-- Content - - - - - - - - - - - - - - - - - -->
         <h3 class="page-header text-center">Gestiunea contractelor</h3>
-        <div class="test"><p>plm</p></div>
         <div class="dataGrid-custom-header col"></div>
-        <div id='dataGrid'>
-            
-        </div>
-        <div id='chart_div' class="col" style=''></div>
+        <div id='dataGrid'></div>
     </div> <!-- END container -->
 </body>
 
