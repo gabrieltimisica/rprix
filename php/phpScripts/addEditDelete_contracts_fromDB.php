@@ -6,16 +6,16 @@
             "OrganisationName" => "ROMPRIX EXIM SRL",
             "ContractType" => "Vanzare",
             "ClientName" => "DAVIO PAN GRUP IMPEX",
-            "ContractName" => "AICIVCICICICIICUIC",
-            "ContractNumberIn" => "acvbnmSDVJNSDFJK",
-            "ContractNumberOut" => "asdfghjklASDFBASDJK",
+            "ContractName" => "PISAT vladimir dcacat",
+            "ContractNumberIn" => "acvasdasdd sdsdas ddasNSDFJK",
+            "ContractNumberOut" => "asdfghjSdssD ddJK",
             "ContractShortDescription" => "descriere descriere descriere",
-            "Status" => "Canceled",
+            "Status" => "Active",
             "ContractBeginDate" => "2018/10/20 00:00:00",
             "ContractExpireDate" => "2019/10/20 00:00:00"
         ],
         "action" => 'addContract',
-        "userID" => 1
+        "userID" => 2
     ];
     echo "<pre>";
     print_r($data_sent);
@@ -33,13 +33,13 @@
             $procedure = $connection->prepare('CALL rpx_sp_DeleteContract(?, ?)');
             $procedure->bind_param("ii",$data_sent->contractID, $data_sent->userID);
             break;
+
         case 'editContract':
             $procedure = $connection->prepare('CALL rpx_sp_DeleteContract(?, ?)');
             $procedure->bind_param("ii",$data_sent->contractID, $data_sent->userID);
             break;
         case 'addContract':
             echo "merge adaugarea";
-            echo $data_sent->data->OrganisationName;
             $procedure = $connection->prepare('CALL rpx_sp_AddContract(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
             $procedure->bind_param("ssssssssssi",$data_sent->data->OrganisationName         , 
                                                  $data_sent->data->ContractType             , 

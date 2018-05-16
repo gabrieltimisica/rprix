@@ -238,6 +238,7 @@ function draw_table(table_data)
                 "userID": userID_fromSession,
                 "action": "addContract"
             };
+            // Adaugam in BD
             contracts_action_editAddDelete(json_toSend);
             
         },
