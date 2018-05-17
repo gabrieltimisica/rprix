@@ -1,25 +1,25 @@
 <?php
     include('../db_config.php');
-    // $data_sent = json_decode($_POST['myData']);
-    $data_sent = (object)[
-        "data" => (object) [
-            "OrganisationName" => "ROMPRIX EXIM SRL",
-            "ContractType" => "Vanzare",
-            "ClientName" => "DAVIO PAN GRUP IMPEX",
-            "ContractName" => "PISAT vladimir dcacat",
-            "ContractNumberIn" => "acvasdasdd sdsdas ddasNSDFJK",
-            "ContractNumberOut" => "asdfghjSdssD ddJK",
-            "ContractShortDescription" => "descriere descriere descriere",
-            "Status" => "Active",
-            "ContractBeginDate" => "2018/10/20 00:00:00",
-            "ContractExpireDate" => "2019/10/20 00:00:00"
-        ],
-        "action" => 'addContract',
-        "userID" => 2
-    ];
-    echo "<pre>";
-    print_r($data_sent);
-    echo "</pre>";
+    $data_sent = json_decode($_POST['myData']);
+    // $data_sent = (object)[
+    //     "data" => (object) [
+    //         "OrganisationName" => "ROMPRIX EXIM SRL",
+    //         "ContractType" => "Vanzare",
+    //         "ClientName" => "DAVIO PAN GRUP IMPEX",
+    //         "ContractName" => "PISATd vladimir dcacdat",
+    //         "ContractNumberIn" => "acvadsdasdd sdsdas ddasNSDFJK",
+    //         "ContractNumberOut" => "asdfdghjSdssD ddJK",
+    //         "ContractShortDescription" => "descriere descriere descriere",
+    //         "Status" => "Active",
+    //         "ContractBeginDate" => "2018/10/20 00:00:00",
+    //         "ContractExpireDate" => "2019/10/20 00:00:00"
+    //     ],
+    //     "action" => 'addContract',
+    //     "userID" => 2
+    // ];
+    // echo "<pre>";
+    // print_r($data_sent);
+    // echo "</pre>";
     $connection = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
     if ($connection->connect_error) 
     {
@@ -35,8 +35,8 @@
             break;
 
         case 'editContract':
-            $procedure = $connection->prepare('CALL rpx_sp_DeleteContract(?, ?)');
-            $procedure->bind_param("ii",$data_sent->contractID, $data_sent->userID);
+            // $procedure = $connection->prepare('CALL rpx_sp_DeleteContract(?, ?)');
+            // $procedure->bind_param("ii",$data_sent->contractID, $data_sent->userID);
             break;
         case 'addContract':
             echo "merge adaugarea";
@@ -48,7 +48,7 @@
                                                  $data_sent->data->ContractNumberIn         ,
                                                  $data_sent->data->ContractNumberOut        ,
                                                  $data_sent->data->ContractShortDescription ,
-                                                 $data_sent->data->Status                   ,
+                                                 $data_sent->data->StatusName               ,
                                                  $data_sent->data->ContractBeginDate        ,
                                                  $data_sent->data->ContractExpireDate       ,
                                                  $data_sent->userID  
@@ -59,10 +59,7 @@
 
     $procedure->execute();
     $procedure_result = $procedure->get_result();
-    print_r( $procedure_result = mysqli_fetch_object($procedure_result));
-
-    // echo $data_sent->contractID;
-    // echo $data_sent->userID_whoDeletedTheContract;
+    // print_r( $procedure_result = mysqli_fetch_object($procedure_result));
     echo '1';
     $connection->close();
 ?>

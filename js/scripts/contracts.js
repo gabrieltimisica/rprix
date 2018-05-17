@@ -93,8 +93,9 @@ function draw_table(table_data)
             {
                 // Status dropdown care apare doar in edit / add. Pentru afisare in tabel avem altul
                 // Nu il putem vedea in tabel
-                caption:'Status',
+                caption:'Contract Status',
                 alignment: 'center',
+                dataField:'StatusName',
                 visible: false,
                 showInColumnChooser: false,
                 lookup: {
@@ -146,11 +147,10 @@ function draw_table(table_data)
             mode: 'popup',
             form: {
                 customizeItem: function(item) {
-                    console.log(item);
                     if (item.dataField == "ContractID" ||
                          item.label.text == "Row Number" ||
                          item.dataField == "ContractAddDate" ||
-                         item.dataField == "StatusName") 
+                         item.label.text == "Status") 
                     {
                         item.visible = false;
                     }
@@ -232,6 +232,7 @@ function draw_table(table_data)
             ignoreColumnOptionNames: []
         },
         onRowInserted: function(e) {
+            console.log("asta e");
             console.log(e.data);
             var json_toSend = {
                 "data": e.data, // informatia despre contract adaugata
@@ -240,6 +241,8 @@ function draw_table(table_data)
             };
             // Adaugam in BD
             contracts_action_editAddDelete(json_toSend);
+            // updatam tabelul, ca sa ia si  contractID din BD, pentru ca se creeaza cand ajunge in bd, nu are de unde sa o ia, deci luam toata informatia din nou
+            get_table_data();
             
         },
         onRowUpdating: function(e) {
@@ -268,8 +271,6 @@ function draw_table(table_data)
         }
         // https://www.devexpress.com/Support/Center/Question/Details/T451111/dxdatagrid-how-to-get-row-values-on-editing-adding-of-a-row
         // site ca sa vezsi edit-ul
-        
-
     });
 }
 
@@ -286,7 +287,7 @@ function contracts_action_editAddDelete(json_toSend)
             console.log("merge");
         },
         error: function() {
-            console.log("nu merge stergerea");
+            // console.log("Ori nu merge, ori s-a dat add fara toti parametrii, dar oricum se baga bine in BD deci np");
         }
     }); // end ajax
 }
@@ -301,6 +302,7 @@ function get_table_data()
         dataType: "json",
         success: function(returned_data) 
         {
+            console.log("ce-mi trimite vladimir");
             console.log(returned_data);
             // Din obj de obj facem vector de object
             var array = $.map(returned_data, function(value, index) {
