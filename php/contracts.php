@@ -82,7 +82,18 @@
 
         <!-- Content - - - - - - - - - - - - - - - - - -->
         <h3 class="page-header text-center">Gestiunea contractelor</h3>
-        <div class="dataGrid-custom-header col"></div>
+        <!-- Headerul de deasupra tabelului pentru custom buttons -->
+        <div class="dataGrid-custom-header col">
+            <button id="clear-datagrid-filters" type="button">Clear filters</button>
+            <input id="filter-by-status-active" type="checkbox">
+            <label for="filter-by-status-active">Active</label>
+            <input id="filter-by-status-expired" type="checkbox">
+            <label for="filter-by-status-expired">Expired </label>
+            <input id="filter-by-status-canceled" type="checkbox">
+            <label for="filter-by-status-canceled">Canceled</label>
+            <input id="filter-by-status-preliminary" type="checkbox">
+            <label for="filter-by-status-preliminary">Preliminary</label>
+        </div> <!--  end custom header  -->
         <div id='dataGrid'></div>
     </div> <!-- END container -->
 </body>

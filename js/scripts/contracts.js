@@ -24,6 +24,20 @@ $(function() {
         }
     });
 
+    // Datagrid methods
+    // -----------------------------------------
+    // Butonul de clear filters
+    $("#clear-datagrid-filters").click(function () {
+        var dataTable = $('#dataGrid').dxDataGrid('instance');
+        dataTable.clearFilter();
+    });
+
+    // $("#filter-by-status-active").click(function () {
+    //     var dataTable = $('#dataGrid').dxDataGrid('instance');
+    //     dataTable.applyFilter("");
+    // });
+
+
 }); // END READY FUNCTION
 
 
@@ -189,7 +203,7 @@ function draw_table(table_data)
         allowColumnReordering: true,
         columnHidingEnabled: true, // la asta sa mai cauti, se poate sa fie overwrited de autowidth 
         filterRow: { // Filtrare dupa valoare pe fiecare coloana
-            visible: true 
+            visible: true
         },
         headerFilter: { // apare acel icon in care poate filtra cu clickuri dupa valori
             allowSearch: true,
