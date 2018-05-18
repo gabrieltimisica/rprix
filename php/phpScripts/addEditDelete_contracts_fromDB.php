@@ -35,8 +35,20 @@
             break;
 
         case 'editContract':
-            // $procedure = $connection->prepare('CALL rpx_sp_DeleteContract(?, ?)');
-            // $procedure->bind_param("ii",$data_sent->contractID, $data_sent->userID);
+                $procedure = $connection->prepare('CALL rpx_sp_AddContract(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+                $procedure->bind_param("issssssssssi",  $data_sent->data->ContractID               ,
+                                                        $data_sent->data->OrganisationName         , 
+                                                        $data_sent->data->ContractType             , 
+                                                        $data_sent->data->ClientName               , 
+                                                        $data_sent->data->ContractName             ,
+                                                        $data_sent->data->ContractNumberIn         ,
+                                                        $data_sent->data->ContractNumberOut        ,
+                                                        $data_sent->data->ContractShortDescription ,
+                                                        $data_sent->data->StatusName               ,
+                                                        $data_sent->data->ContractBeginDate        ,
+                                                        $data_sent->data->ContractExpireDate       ,
+                                                        $data_sent->userID  
+               ); 
             break;
         case 'addContract':
             echo "merge adaugarea";
