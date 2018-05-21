@@ -137,6 +137,7 @@ statustable = [{
 // Aici este apelat devextreme si creeaza tabelul
 function draw_table(table_data) 
 {
+  
     $("#dataGrid").dxDataGrid({
         dataSource: table_data,
         columns: [
@@ -154,9 +155,8 @@ function draw_table(table_data)
                 allowGrouping: true
             },
             {
-                
-                caption:'Contract Name',
-                dataField:'ContractName',
+                caption:'Organisation',
+                dataField:'OrganisationName',
                 allowGrouping: true
             },
             {
@@ -165,9 +165,11 @@ function draw_table(table_data)
                 alignment: 'left',
                 allowGrouping: true
             },
+            
             {
-                caption:'Organisation',
-                dataField:'OrganisationName',
+                
+                caption:'Contract Name',
+                dataField:'ContractName',
                 allowGrouping: true
             },
             {
@@ -232,15 +234,69 @@ function draw_table(table_data)
             allowUpdating:true,
             mode: 'popup',
             form: {
-                customizeItem: function(item) {
-                    if (item.dataField == "ContractID" ||
-                         item.label.text == "Row Number" ||
-                         item.dataField == "ContractAddDate")
+                colCount: 2,
+                items: [
                     {
-                        item.visible = false;
+                    itemType: "group",
+                    items: [ 
+                        { dataField: "ContractType" }
+                    ]},
+                    {
+                        itemType: "group",
+                        items: [
+                        { dataField: "OrganisationName",cssClass: "popupCells" }
+                    ]},
+                    {
+                        itemType: "group",
+                        colSpan:2,
+                        items: [
+                        { dataField: "ContractName",cssClass: "popupCells" }
+                    ]},
+                    {
+                        itemType: "group",
+                        colSpan:2,
+                        items: [
+                        { dataField: "ClientName",cssClass: "popupCells" }
+                    ]},
+                    {
+                        itemType: "group",
+                        items: [
+                        { dataField: "ContractNumberIn" }
+                    ]},
+                    {
+                        itemType: "group",
+                        items: [
+                        { dataField: "ContractNumberOut",cssClass: "popupCells" }
+                    ]},
+                    {
+                        itemType: "group",
+                        items: [
+                        { dataField: "ContractBeginDate",editorType: "dxCalendar" }
+                    ]},
+                    {
+                        itemType: "group",
+                        items: [
+                        { dataField: "ContractExpireDate",editorType: "dxCalendar",cssClass: "popupCells" }
+                    ]},
+                    {
+                        itemType: "group",
+                       
+                        items: [
+                        { dataField: "StatusName"}
+                    ]},
+                    {
+                        itemType: "group",
+                        items: [
+                        {caption: "pula"}]},
+                    {
+                        itemType: "group",
+                        colSpan:2,
+                        items: [
+                        { dataField: "ContractShortDescription",editorType: "dxTextArea",
+                        editorOptions: {height: 90},cssClass: "popupCells" } 
+                    ]
                     }
-                } // end customizeitem
-            },  
+                ]}, // end form
             popup: {
                 title: "Add contract",
                 showTitle: true,
@@ -329,6 +385,8 @@ function draw_table(table_data)
             console.log("mergeee");
         },
         onRowUpdating: function(e) {
+            console.log("aici incepe editarea");
+            
             var json_toSend = {
                 "data": e.oldData, // oldData este un obiect care contine toti parametrii din baza de date, cu update-ul facut
                 "userID": userID_fromSession,
@@ -337,15 +395,23 @@ function draw_table(table_data)
             console.log("Json editare");
             console.log(json_toSend);
             contracts_action_editAddDelete(json_toSend);
+            console.log(json_toSend);
         },
         onEditingStart: function(e) {
             // settimeout ca sa aiba popup-ul timp sa apara mai intai, ca sa aiba ce sa modifice
             setTimeout(function(){
                 // Div-ul in care se afla titlul de la popup-ul de editare
                 $(".dx-datagrid-edit-popup .dx-toolbar-label .dx-item-content div").text("Edit contract");
-            });   
-            // Cand incepe editarea trebuie sa luam din baza de date lista de optiuni care apare in dropdown pentr organizatii, clienti si status
-            // getDataOptionsForDropdowns();
+            }); 
+         
+        },
+        // event pentru textarea la contract short description
+        onEditorPreparing: function(e) {
+            
+            if (e.parentType == "dataRow" && e.dataField == "ContractShortDescription") {
+                e.editorName = "dxTextArea";
+                e.colSpan = 2;
+            }
         },
         onRowRemoved: function(e){
             console.log(e.data.ContractID, userID_fromSession);
@@ -356,9 +422,8 @@ function draw_table(table_data)
             };
             contracts_action_editAddDelete(json_toSend);
         }
-    });
+    }); // end dxdatagrid
 }
-
 
 // Functie apelata din eventul de add/edit/delete contracts din dxdatagrid 
 function contracts_action_editAddDelete(json_toSend) 
@@ -427,6 +492,9 @@ function getDataOptionsForDropdowns()
                 console.log(xhr.status,"-------",status,"---------",text);
         }
     }); // end ajax
+
+
+    
 }
 
 
