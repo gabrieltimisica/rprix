@@ -1,4 +1,17 @@
 
+#dataGrid {
+    margin-bottom: 40px;
+}
+/* sub path se afla rect */
+
+/* Este headerul de deasupra tabelului */
+.dataGrid-custom-header {
+    margin-bottom: 0;
+    background-color: white;
+    border-bottom: 1px solid lightgrey;
+    border-top: 1px solid lightgrey;
+}
+
 .container1 {
     padding: 0;
     background-color: white;
@@ -12,5 +25,11 @@
 h3.page-header {
     padding-top: 70px;
     margin-bottom: 50px;
+}
+
+/* Label si inputurile de la checkboxurile de filtrare rapida din header */
+label[class^="checkbox-label-filter"],
+input[id^="filter-by-status"] {
+    cursor: pointer;
 }
 

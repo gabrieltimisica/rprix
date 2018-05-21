@@ -3,18 +3,19 @@
     $data_sent = json_decode($_POST['myData']);
     // $data_sent = (object)[
     //     "data" => (object) [
+    //         "ContractID" => 48,
     //         "OrganisationName" => "ROMPRIX EXIM SRL",
     //         "ContractType" => "Vanzare",
     //         "ClientName" => "DAVIO PAN GRUP IMPEX",
-    //         "ContractName" => "PISATd vladimir dcacdat",
+    //         "ContractName" => "test de editare",
     //         "ContractNumberIn" => "acvadsdasdd sdsdas ddasNSDFJK",
     //         "ContractNumberOut" => "asdfdghjSdssD ddJK",
     //         "ContractShortDescription" => "descriere descriere descriere",
-    //         "Status" => "Active",
+    //         "StatusName" => 1,
     //         "ContractBeginDate" => "2018/10/20 00:00:00",
     //         "ContractExpireDate" => "2019/10/20 00:00:00"
     //     ],
-    //     "action" => 'addContract',
+    //     "action" => 'editContract',
     //     "userID" => 2
     // ];
     // echo "<pre>";
@@ -35,8 +36,8 @@
             break;
 
         case 'editContract':
-                $procedure = $connection->prepare('CALL rpx_sp_AddContract(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-                $procedure->bind_param("issssssssssi",  $data_sent->data->ContractID               ,
+                $procedure = $connection->prepare('CALL rpx_sp_EditContract(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+                $procedure->bind_param("isssssssissi",  $data_sent->data->ContractID               ,
                                                         $data_sent->data->OrganisationName         , 
                                                         $data_sent->data->ContractType             , 
                                                         $data_sent->data->ClientName               , 
@@ -44,23 +45,23 @@
                                                         $data_sent->data->ContractNumberIn         ,
                                                         $data_sent->data->ContractNumberOut        ,
                                                         $data_sent->data->ContractShortDescription ,
-                                                        $data_sent->data->StatusName               ,
+                                                        $data_sent->data->ContractStatusID         ,
                                                         $data_sent->data->ContractBeginDate        ,
                                                         $data_sent->data->ContractExpireDate       ,
-                                                        $data_sent->userID  
+                                                        $data_sent->userID   
                ); 
             break;
         case 'addContract':
             echo "merge adaugarea";
             $procedure = $connection->prepare('CALL rpx_sp_AddContract(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-            $procedure->bind_param("ssssssssssi",$data_sent->data->OrganisationName         , 
+            $procedure->bind_param("sssssssissi",$data_sent->data->OrganisationName         , 
                                                  $data_sent->data->ContractType             , 
                                                  $data_sent->data->ClientName               , 
                                                  $data_sent->data->ContractName             ,
                                                  $data_sent->data->ContractNumberIn         ,
                                                  $data_sent->data->ContractNumberOut        ,
                                                  $data_sent->data->ContractShortDescription ,
-                                                 $data_sent->data->StatusName               ,
+                                                 $data_sent->data->ContractStatusID         ,
                                                  $data_sent->data->ContractBeginDate        ,
                                                  $data_sent->data->ContractExpireDate       ,
                                                  $data_sent->userID  
