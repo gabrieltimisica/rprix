@@ -7,7 +7,7 @@
     //         "OrganisationName" => "ROMPRIX EXIM SRL",
     //         "ContractType" => "Vanzare",
     //         "ClientName" => "DAVIO PAN GRUP IMPEX",
-    //         "ContractName" => "test de editare",
+    //         "ContractName" => "test de asdfgh",
     //         "ContractNumberIn" => "acvadsdasdd sdsdas ddasNSDFJK",
     //         "ContractNumberOut" => "asdfdghjSdssD ddJK",
     //         "ContractShortDescription" => "descriere descriere descriere",
@@ -36,23 +36,23 @@
             break;
 
         case 'editContract':
-                $procedure = $connection->prepare('CALL rpx_sp_EditContract(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-                $procedure->bind_param("isssssssissi",  $data_sent->data->ContractID               ,
-                                                        $data_sent->data->OrganisationName         , 
-                                                        $data_sent->data->ContractType             , 
-                                                        $data_sent->data->ClientName               , 
-                                                        $data_sent->data->ContractName             ,
-                                                        $data_sent->data->ContractNumberIn         ,
-                                                        $data_sent->data->ContractNumberOut        ,
-                                                        $data_sent->data->ContractShortDescription ,
-                                                        $data_sent->data->ContractStatusID         ,
-                                                        $data_sent->data->ContractBeginDate        ,
-                                                        $data_sent->data->ContractExpireDate       ,
-                                                        $data_sent->userID   
+            $procedure = $connection->prepare('CALL rpx_sp_EditContract(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+            $procedure->bind_param("isssssssissi",  $data_sent->data->ContractID               ,
+                                                    $data_sent->data->OrganisationName         , 
+                                                    $data_sent->data->ContractType             , 
+                                                    $data_sent->data->ClientName               , 
+                                                    $data_sent->data->ContractName             ,
+                                                    $data_sent->data->ContractNumberIn         ,
+                                                    $data_sent->data->ContractNumberOut        ,
+                                                    $data_sent->data->ContractShortDescription ,
+                                                    $data_sent->data->ContractStatusID         ,
+                                                    $data_sent->data->ContractBeginDate        ,
+                                                    $data_sent->data->ContractExpireDate       ,
+                                                    $data_sent->userID   
                ); 
             break;
         case 'addContract':
-            echo "merge adaugarea";
+            // echo "merge adaugarea";
             $procedure = $connection->prepare('CALL rpx_sp_AddContract(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
             $procedure->bind_param("sssssssissi",$data_sent->data->OrganisationName         , 
                                                  $data_sent->data->ContractType             , 
