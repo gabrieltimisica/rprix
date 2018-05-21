@@ -32,26 +32,51 @@ $(function() {
         dataTable.clearFilter();
     });
 
-    // $("#filter-by-status-active").click(function () {
-    //     var dataTable = $('#dataGrid').dxDataGrid('instance');
-    //     dataTable.applyFilter("");
-    // });
+    // Aplicam filtrele de status din checkboxul din header
+    // arrayOfFilters este un vector in care fiecare element reprezinta un filtru. Intre elemente trebuie sa existe un 'or', el aflandu-se pe pozitii impare
+    $("#filter-by-status-active").click(function () {
+        
+        var dataTable = $('#dataGrid').dxDataGrid('instance');
+        dataTable.filter(["ContractStatusID", "=", 1]); // Active
+        console.log(dataTable.getCombinedFilter());
+    });
+    $("#filter-by-status-canceled").click(function () {
+        var dataTable = $('#dataGrid').dxDataGrid('instance');
+        dataTable.filter(["ContractStatusID", "=", 2]); // Canceled
+    });
+
+    // !!!!!!!!!!!!!!!!!!!!!
+    // Ce mai ai de facut e asa:
+    // schimba cursorul sa fie pointer cand este peste checkboxuri
+    // Fa sa poti combina filtrele, adica sa fie mai multe de ales si sa le afiseze pe taote
+    // Fa sa se stearga filtrul daca nu e apasat
 
 
 }); // END READY FUNCTION
 
+// arrayOfValuesToBeFilteredFromHeaderCheckboxes este un vector in care fiecare element reprezinta o valoare de filtru. Eu iau toate aceste valori si din ele creez arrayOfFilters
+// var arrayOfValuesToBeFilteredFromHeaderCheckboxes = new array();
+// Functia aplica modificarile bazat pe array-ul de mai sus
+// function applyFiltersToDatagridFromHeaderCheckboxes () {
 
-var states = [{
-    "ID": 1,
+// }
+
+
+// Variabilele astea sunt vectori de obiecte
+// In ele stochez optiunile din care se poate alege in dropdown uri cand apas pe edit / add
+var statusTable, organisationTable, clientsTable, contractTypeTable;
+
+statustable = [{
+    "StatusID": 1,
     "Name": "Active"
 }, {
-    "ID": 2,
+    "StatusID": 2,
     "Name": "Canceled"
 }, {
-    "ID": 3,
+    "StatusID": 3,
     "Name": "Closed"
 }, {
-    "ID": 4,
+    "StatusID": 4,
     "Name": "Preliminary"
 }];
 
@@ -100,22 +125,13 @@ function draw_table(table_data)
             {
                 // Apare in tabel, nu apare la add / edit
                 caption:'Status',
-                dataField:'StatusName',
+                dataField:'ContractStatusID',
                 alignment: 'center',
-                allowGrouping: true
-            },
-            {
-                // Status dropdown care apare doar in edit / add. Pentru afisare in tabel avem altul
-                // Nu il putem vedea in tabel
-                caption:'Contract Status',
-                alignment: 'center',
-                dataField:'StatusName',
-                visible: false,
-                showInColumnChooser: false,
+                allowGrouping: true,
                 lookup: {
-                    dataSource: states,
+                    dataSource: statustable,
                     displayExpr: "Name",
-                    valueExpr: "ID"
+                    valueExpr: "StatusID"
                 }
             },
             {
@@ -163,14 +179,9 @@ function draw_table(table_data)
                 customizeItem: function(item) {
                     if (item.dataField == "ContractID" ||
                          item.label.text == "Row Number" ||
-                         item.dataField == "ContractAddDate" ||
-                         item.label.text == "Status") 
+                         item.dataField == "ContractAddDate")
                     {
                         item.visible = false;
-                    }
-                    if (item.label.text == "Contract Status")
-                    {
-                        item.visible = true;
                     }
                 } // end customizeitem
             },  
@@ -259,12 +270,17 @@ function draw_table(table_data)
             get_table_data();
             
         },
+        onEditorPrepared: function(e) {
+            console.log("mergeee");
+        },
         onRowUpdating: function(e) {
             var json_toSend = {
                 "data": e.oldData, // oldData este un obiect care contine toti parametrii din baza de date, cu update-ul facut
                 "userID": userID_fromSession,
                 "action": "editContract"
             };
+            console.log("Json editare");
+            console.log(json_toSend);
             contracts_action_editAddDelete(json_toSend);
         },
         onEditingStart: function(e) {
@@ -273,6 +289,8 @@ function draw_table(table_data)
                 // Div-ul in care se afla titlul de la popup-ul de editare
                 $(".dx-datagrid-edit-popup .dx-toolbar-label .dx-item-content div").text("Edit contract");
             });   
+            // Cand incepe editarea trebuie sa luam din baza de date lista de optiuni care apare in dropdown pentr organizatii, clienti si status
+            // getDataOptionsForDropdowns();
         },
         onRowRemoved: function(e){
             console.log(e.data.ContractID, userID_fromSession);
@@ -306,7 +324,7 @@ function contracts_action_editAddDelete(json_toSend)
     }); // end ajax
 }
 
-// luam contractele din BD
+// luam toata tabela de contracte din BD
 function get_table_data()
 {
     $.ajax({
@@ -316,7 +334,31 @@ function get_table_data()
         dataType: "json",
         success: function(returned_data) 
         {
-            console.log("ce-mi trimite vladimir");
+            console.log(returned_data);
+            // Din obj de obj facem vector de object
+            var array = $.map(returned_data, function(value, index) {
+                return [value];
+            });
+
+            // Acum desenam tabelul
+            draw_table(array);
+        },
+        error: function(xhr, status, text)
+        {
+                console.log(xhr.status,"-------",status,"---------",text);
+        }
+    }); // end ajax
+}
+
+// Functie care preia atunci cand se apasa pe edit optiunile care sunt afisate in dropdown pentru organizatii, clienti si status
+function getDataOptionsForDropdowns()
+{
+    $.ajax({
+        type: "POST",
+        url: "phpScripts/getTableDataForDropdownInEdit.php",
+        success: function(returned_data) 
+        {
+            console.log("status organizatie clienti");
             console.log(returned_data);
             // Din obj de obj facem vector de object
             var array = $.map(returned_data, function(value, index) {
