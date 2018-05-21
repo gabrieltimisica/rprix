@@ -172,19 +172,19 @@ function draw_table(table_data)
                     {
                         itemType: "group",
                         items: [
-                        { dataField: "OrganisationName",cssClass: "formspopup" }
+                        { dataField: "OrganisationName",cssClass: "popupCells" }
                     ]},
                     {
                         itemType: "group",
                         colSpan:2,
                         items: [
-                        { dataField: "ContractName",cssClass: "formspopup" }
+                        { dataField: "ContractName",cssClass: "popupCells" }
                     ]},
                     {
                         itemType: "group",
                         colSpan:2,
                         items: [
-                        { dataField: "ClientName",cssClass: "formspopup" }
+                        { dataField: "ClientName",cssClass: "popupCells" }
                     ]},
                     {
                         itemType: "group",
@@ -194,33 +194,34 @@ function draw_table(table_data)
                     {
                         itemType: "group",
                         items: [
-                        { dataField: "ContractNumberOut",cssClass: "formspopup" }
+                        { dataField: "ContractNumberOut",cssClass: "popupCells" }
                     ]},
                     {
                         itemType: "group",
                         items: [
-                        { dataField: "ContractBeginDate",editorType: "dxDateBox" }
+                        { dataField: "ContractBeginDate",editorType: "dxCalendar" }
                     ]},
                     {
                         itemType: "group",
                         items: [
-                        { dataField: "ContractExpireDate",editorType: "dxDateBox",cssClass: "formspopup" }
+                        { dataField: "ContractExpireDate",editorType: "dxCalendar",cssClass: "popupCells" }
                     ]},
                     {
                         itemType: "group",
+                       
                         items: [
                         { dataField: "StatusName"}
                     ]},
                     {
                         itemType: "group",
                         items: [
-                        {}]},
+                        {caption: "pula"}]},
                     {
                         itemType: "group",
                         colSpan:2,
                         items: [
                         { dataField: "ContractShortDescription",editorType: "dxTextArea",
-                        editorOptions: {height: 90},cssClass: "formspopup" } 
+                        editorOptions: {height: 90},cssClass: "popupCells" } 
                     ]
                     }
                 ]}, // end form ]from items

@@ -15,9 +15,9 @@ h3.page-header {
 }
 
 /* margine pentru formurille din dreapta din popup*/
-
-.formspopup {
-    margin-right: 10px;
+.popupCells {
+    margin-right: 15px;
 }
+
 
 
