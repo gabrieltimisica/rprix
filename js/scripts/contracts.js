@@ -59,6 +59,7 @@ var states = [{
 // Aici este apelat devextreme si creeaza tabelul
 function draw_table(table_data) 
 {
+  
     $("#dataGrid").dxDataGrid({
         dataSource: table_data,
         columns: [
@@ -76,9 +77,8 @@ function draw_table(table_data)
                 allowGrouping: true
             },
             {
-                
-                caption:'Contract Name',
-                dataField:'ContractName',
+                caption:'Organisation',
+                dataField:'OrganisationName',
                 allowGrouping: true
             },
             {
@@ -87,9 +87,11 @@ function draw_table(table_data)
                 alignment: 'left',
                 allowGrouping: true
             },
+            
             {
-                caption:'Organisation',
-                dataField:'OrganisationName',
+                
+                caption:'Contract Name',
+                dataField:'ContractName',
                 allowGrouping: true
             },
             {
@@ -160,20 +162,69 @@ function draw_table(table_data)
             allowUpdating:true,
             mode: 'popup',
             form: {
-                customizeItem: function(item) {
-                    if (item.dataField == "ContractID" ||
-                         item.label.text == "Row Number" ||
-                         item.dataField == "ContractAddDate" ||
-                         item.label.text == "Status") 
+                colCount: 2,
+                items: [
                     {
-                        item.visible = false;
-                    }
-                    if (item.label.text == "Contract Status")
+                    itemType: "group",
+                    items: [ 
+                        { dataField: "ContractType" }
+                    ]},
                     {
-                        item.visible = true;
+                        itemType: "group",
+                        items: [
+                        { dataField: "OrganisationName",cssClass: "formspopup" }
+                    ]},
+                    {
+                        itemType: "group",
+                        colSpan:2,
+                        items: [
+                        { dataField: "ContractName",cssClass: "formspopup" }
+                    ]},
+                    {
+                        itemType: "group",
+                        colSpan:2,
+                        items: [
+                        { dataField: "ClientName",cssClass: "formspopup" }
+                    ]},
+                    {
+                        itemType: "group",
+                        items: [
+                        { dataField: "ContractNumberIn" }
+                    ]},
+                    {
+                        itemType: "group",
+                        items: [
+                        { dataField: "ContractNumberOut",cssClass: "formspopup" }
+                    ]},
+                    {
+                        itemType: "group",
+                        items: [
+                        { dataField: "ContractBeginDate",editorType: "dxDateBox" }
+                    ]},
+                    {
+                        itemType: "group",
+                        items: [
+                        { dataField: "ContractExpireDate",editorType: "dxDateBox",cssClass: "formspopup" }
+                    ]},
+                    {
+                        itemType: "group",
+                        items: [
+                        { dataField: "StatusName"}
+                    ]},
+                    {
+                        itemType: "group",
+                        items: [
+                        {}]},
+                    {
+                        itemType: "group",
+                        colSpan:2,
+                        items: [
+                        { dataField: "ContractShortDescription",editorType: "dxTextArea",
+                        editorOptions: {height: 90},cssClass: "formspopup" } 
+                    ]
                     }
-                } // end customizeitem
-            },  
+                ]}, // end form ]from items
+             
             popup: {
                 title: "Add contract",
                 showTitle: true,
@@ -260,19 +311,31 @@ function draw_table(table_data)
             
         },
         onRowUpdating: function(e) {
+            console.log("aici incepe editarea");
+            
             var json_toSend = {
                 "data": e.oldData, // oldData este un obiect care contine toti parametrii din baza de date, cu update-ul facut
                 "userID": userID_fromSession,
                 "action": "editContract"
             };
             contracts_action_editAddDelete(json_toSend);
+            console.log(json_toSend);
         },
         onEditingStart: function(e) {
             // settimeout ca sa aiba popup-ul timp sa apara mai intai, ca sa aiba ce sa modifice
             setTimeout(function(){
                 // Div-ul in care se afla titlul de la popup-ul de editare
                 $(".dx-datagrid-edit-popup .dx-toolbar-label .dx-item-content div").text("Edit contract");
-            });   
+            }); 
+         
+        },
+        // event pentru textarea la contract short description
+        onEditorPreparing: function(e) {
+            
+            if (e.parentType == "dataRow" && e.dataField == "ContractShortDescription"){
+                e.editorName = "dxTextArea";
+                e.colSpan = 2;
+            }
         },
         onRowRemoved: function(e){
             console.log(e.data.ContractID, userID_fromSession);
@@ -286,7 +349,10 @@ function draw_table(table_data)
         // https://www.devexpress.com/Support/Center/Question/Details/T451111/dxdatagrid-how-to-get-row-values-on-editing-adding-of-a-row
         // site ca sa vezsi edit-ul
     });
+ 
 }
+
+
 
 // Functie apelata din eventul de add/edit/delete contracts din dxdatagrid 
 function contracts_action_editAddDelete(json_toSend) 
@@ -331,6 +397,9 @@ function get_table_data()
                 console.log(xhr.status,"-------",status,"---------",text);
         }
     }); // end ajax
+
+
+    
 }
 
 

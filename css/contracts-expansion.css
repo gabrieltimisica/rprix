@@ -14,3 +14,10 @@ h3.page-header {
     margin-bottom: 50px;
 }
 
+/* margine pentru formurille din dreapta din popup*/
+
+.formspopup {
+    margin-right: 10px;
+}
+
+

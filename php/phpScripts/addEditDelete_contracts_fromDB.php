@@ -3,18 +3,19 @@
     $data_sent = json_decode($_POST['myData']);
     // $data_sent = (object)[
     //     "data" => (object) [
+    //         "ContractID" => 48,
     //         "OrganisationName" => "ROMPRIX EXIM SRL",
     //         "ContractType" => "Vanzare",
     //         "ClientName" => "DAVIO PAN GRUP IMPEX",
-    //         "ContractName" => "PISATd vladimir dcacdat",
+    //         "ContractName" => "test de asdfgh",
     //         "ContractNumberIn" => "acvadsdasdd sdsdas ddasNSDFJK",
     //         "ContractNumberOut" => "asdfdghjSdssD ddJK",
     //         "ContractShortDescription" => "descriere descriere descriere",
-    //         "Status" => "Active",
+    //         "StatusName" => 1,
     //         "ContractBeginDate" => "2018/10/20 00:00:00",
     //         "ContractExpireDate" => "2019/10/20 00:00:00"
     //     ],
-    //     "action" => 'addContract',
+    //     "action" => 'editContract',
     //     "userID" => 2
     // ];
     // echo "<pre>";
@@ -35,8 +36,9 @@
             break;
 
         case 'editContract':
-                $procedure = $connection->prepare('CALL rpx_sp_AddContract(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-                $procedure->bind_param("issssssssssi",  $data_sent->data->ContractID               ,
+                echo "merge editarea";
+                $procedure = $connection->prepare('CALL rpx_sp_EditContract(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+                $procedure->bind_param("isssssssissi",  $data_sent->data->ContractID               ,
                                                         $data_sent->data->OrganisationName         , 
                                                         $data_sent->data->ContractType             , 
                                                         $data_sent->data->ClientName               , 
@@ -51,7 +53,7 @@
                ); 
             break;
         case 'addContract':
-            echo "merge adaugarea";
+            // echo "merge adaugarea";
             $procedure = $connection->prepare('CALL rpx_sp_AddContract(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
             $procedure->bind_param("ssssssssssi",$data_sent->data->OrganisationName         , 
                                                  $data_sent->data->ContractType             , 
