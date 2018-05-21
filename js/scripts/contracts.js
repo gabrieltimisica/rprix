@@ -1,6 +1,14 @@
+// LINKURI UTILE
+// https://js.devexpress.com/Demos/WidgetsGallery/Demo/Lookup/Templates/jQuery/Light/       a definit fiecare linie din lookup
+// http://jsfiddle.net/o1qu92v2/     custom button in header 
+// https://www.devexpress.com/Support/Center/Question/Details/T477153/dxselectbox-how-to-determine-if-the-user-click-on-clear-button          custom button click event(varianta 2, prima e cu un rand mai sus)
+
+
 // arrayOfValuesToBeFilteredFromHeaderCheckboxes este un vector in care fiecare element reprezinta o valoare de filtru. Eu iau toate aceste valori si din ele creez arrayOfFilters
 var arrayOfValuesToBeFilteredFromHeaderCheckboxes = [];
 
+
+// pula mea
 $(function() {
     get_table_data();
 
@@ -133,11 +141,12 @@ statustable = [{
     "Name": "Preliminary"
 }];
 
+orgtable = ["plm1", "plm2", "plm3"];
+
 
 // Aici este apelat devextreme si creeaza tabelul
 function draw_table(table_data) 
 {
-  
     $("#dataGrid").dxDataGrid({
         dataSource: table_data,
         columns: [
@@ -157,7 +166,51 @@ function draw_table(table_data)
             {
                 caption:'Organisation',
                 dataField:'OrganisationName',
-                allowGrouping: true
+                allowGrouping: true,
+                editCellTemplate: function (cellElement, cellInfo) {
+                    console.log(cellElement, cellInfo);
+                    var div = document.createElement("div");
+                    cellElement.get(0).appendChild(div);
+                    $(div).dxSelectBox({
+                        dataSource: statustable,
+                        valueExpr: 'StatusID',
+                        displayExpr: 'Name',
+                        showClearButton: true,
+                        openOnFieldClick: false, // ca sa facem prevent la dropdown cand apasam pe container
+                        hoverStateEnabled: false,  // sa nu se inegreasca dropdownul cand faci hover
+                        searchEnabled: true, // ca sa poata scrie in search, nu doar sa selecteze din dropdown
+                        // onValueChanged: function (e) {
+                        //     cellInfo.setValue(e.value);
+                        // },
+                        fieldTemplate: function (value) {
+                            var $container = $("<div>");
+                            var $input = $("<div>").dxTextBox({
+                                text: value
+                            }).on('click', function (args) {
+                                // events cand apesi pe containerul cu text
+                            });
+                            var $customButton = $("<div>").dxButton({
+                                // text: "Custom",
+                                icon: "search",
+                                onClick: function (args) {
+                                    console.log("inputtext",$input.text);
+                                    console.log("CustomButton");
+                                    console.log("args", args);
+                                    console.log("valuee=", $input);
+                                    var e = args.event; // facem astea 3 ca sa oprim dropdownul
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                }
+                            }).css({
+                                position: "absolute",
+                                right: "0",
+                                top: "0"
+                            }); // end customButton
+                            $container.append($input).append($customButton);
+                            return $container;
+                        } // end fieldTemplate
+                    }).find(".dx-texteditor-buttons-container").css({"display": "none", "pointer-events": "none"}); // ca sa dam hidden la dropdown icon
+                } // end editCellTemplate
             },
             {
                 caption:'Client',
@@ -165,7 +218,6 @@ function draw_table(table_data)
                 alignment: 'left',
                 allowGrouping: true
             },
-            
             {
                 
                 caption:'Contract Name',
@@ -205,14 +257,16 @@ function draw_table(table_data)
             {
                 caption:'Expire Date',
                 dataField:'ContractExpireDate',
+                format: 'dd/MM/yyyy',
                 allowGrouping: true,
-                dataType: 'datetime'
+                dataType: 'date'
             },
             {
                 caption:'Start Date',
                 dataField:'ContractBeginDate',
                 allowGrouping: true,
-                dataType: 'datetime',
+                format: 'dd/MM/yyyy',
+                dataType: 'date',
                 visible: false
             },
             {
@@ -235,73 +289,102 @@ function draw_table(table_data)
             mode: 'popup',
             form: {
                 colCount: 2,
-                items: [
-                    {
+                items: [{
                     itemType: "group",
-                    items: [ 
-                        { dataField: "ContractType" }
-                    ]},
-                    {
-                        itemType: "group",
-                        items: [
-                        { dataField: "OrganisationName",cssClass: "popupCells" }
-                    ]},
-                    {
-                        itemType: "group",
-                        colSpan:2,
-                        items: [
-                        { dataField: "ContractName",cssClass: "popupCells" }
-                    ]},
-                    {
-                        itemType: "group",
-                        colSpan:2,
-                        items: [
-                        { dataField: "ClientName",cssClass: "popupCells" }
-                    ]},
-                    {
-                        itemType: "group",
-                        items: [
-                        { dataField: "ContractNumberIn" }
-                    ]},
-                    {
-                        itemType: "group",
-                        items: [
-                        { dataField: "ContractNumberOut",cssClass: "popupCells" }
-                    ]},
-                    {
-                        itemType: "group",
-                        items: [
-                        { dataField: "ContractBeginDate",editorType: "dxCalendar" }
-                    ]},
-                    {
-                        itemType: "group",
-                        items: [
-                        { dataField: "ContractExpireDate",editorType: "dxCalendar",cssClass: "popupCells" }
-                    ]},
-                    {
-                        itemType: "group",
-                       
-                        items: [
-                        { dataField: "StatusName"}
-                    ]},
-                    {
-                        itemType: "group",
-                        items: [
-                        {caption: "pula"}]},
-                    {
-                        itemType: "group",
-                        colSpan:2,
-                        items: [
-                        { dataField: "ContractShortDescription",editorType: "dxTextArea",
-                        editorOptions: {height: 90},cssClass: "popupCells" } 
-                    ]
-                    }
-                ]}, // end form
+                    items: [{ 
+                        dataField: "ContractType" 
+                    }]
+                },
+                {
+                    // Asta e pus aici ca sa ocupe loc, sa ocupe jumatate de coloana
+                    itemType: "group",
+                    items: [{
+                        caption: "spatiugol2"
+                    }]
+                },
+                {
+                    itemType: "group",
+                    colSpan: 2,
+                    items: [{ 
+                        dataField: "OrganisationName",
+                        cssClass: "popupCells"
+                    }]
+                },
+                {
+                    itemType: "group",
+                    colSpan:2,
+                    items: [{ 
+                        dataField: "ContractName",
+                        cssClass: "popupCells" 
+                    }]
+                },
+                {
+                    itemType: "group",
+                    colSpan:2,
+                    items: [{ 
+                        dataField: "ClientName",
+                        cssClass: "popupCells" 
+                    }]
+                },
+                {
+                    itemType: "group",
+                    items: [{ 
+                        dataField: "ContractNumberIn" 
+                    }]
+                },
+                {
+                    itemType: "group",
+                    items: [{ 
+                        dataField: "ContractNumberOut",
+                        cssClass: "popupCells" 
+                    }]
+                },
+                {
+                    itemType: "group",
+                    items: [{ 
+                        dataField: "ContractBeginDate",
+                        editorType: "dxCalendar" 
+                    }]
+                },
+                {
+                    itemType: "group",
+                    items: [{ 
+                        dataField: "ContractExpireDate",
+                        editorType: "dxCalendar",
+                        cssClass: "popupCells" 
+                    }]
+                },
+                {
+                    itemType: "group",
+                    items: [{ 
+                        dataField: "ContractStatusID"
+                    }]
+                },
+                {
+                    // Asta e pus aici ca sa ocupe loc, sa faca short descriptionul pe tot randul
+                    itemType: "group",
+                    items: [{
+                        caption: "spatiugol"
+                    }]
+                },
+                {
+                    itemType: "group",
+                    colSpan: 2,
+                    items: [{ 
+                        dataField: "ContractShortDescription",
+                        editorType: "dxTextArea",
+                        editorOptions: {
+                            height: 90
+                        },
+                        cssClass: "popupCells" 
+                    }]
+                }
+            ]}, // end form
             popup: {
                 title: "Add contract",
                 showTitle: true,
-                width: 700,
-                height: 500,
+                width: 800,
+                height: 600,
                 position: {
                     my: "center",
                     at: "center",
@@ -381,9 +464,7 @@ function draw_table(table_data)
             get_table_data();
             
         },
-        onEditorPrepared: function(e) {
-            console.log("mergeee");
-        },
+
         onRowUpdating: function(e) {
             console.log("aici incepe editarea");
             
@@ -392,10 +473,7 @@ function draw_table(table_data)
                 "userID": userID_fromSession,
                 "action": "editContract"
             };
-            console.log("Json editare");
-            console.log(json_toSend);
             contracts_action_editAddDelete(json_toSend);
-            console.log(json_toSend);
         },
         onEditingStart: function(e) {
             // settimeout ca sa aiba popup-ul timp sa apara mai intai, ca sa aiba ce sa modifice
@@ -405,15 +483,17 @@ function draw_table(table_data)
             }); 
          
         },
+        onCellPrepared: function(e) {
+        },
         // event pentru textarea la contract short description
         onEditorPreparing: function(e) {
-            
             if (e.parentType == "dataRow" && e.dataField == "ContractShortDescription") {
                 e.editorName = "dxTextArea";
                 e.colSpan = 2;
             }
+                
         },
-        onRowRemoved: function(e){
+        onRowRemoved: function(e) {
             console.log(e.data.ContractID, userID_fromSession);
             var json_toSend = {
                 "contractID": e.data.ContractID,
