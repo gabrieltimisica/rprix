@@ -1,5 +1,9 @@
+// arrayOfValuesToBeFilteredFromHeaderCheckboxes este un vector in care fiecare element reprezinta o valoare de filtru. Eu iau toate aceste valori si din ele creez arrayOfFilters
+var arrayOfValuesToBeFilteredFromHeaderCheckboxes = [];
+
 $(function() {
     get_table_data();
+
     // Logout button
     $(".loggout-btt").click(function() {  
         $.ajax({
@@ -34,32 +38,81 @@ $(function() {
 
     // Aplicam filtrele de status din checkboxul din header
     // arrayOfFilters este un vector in care fiecare element reprezinta un filtru. Intre elemente trebuie sa existe un 'or', el aflandu-se pe pozitii impare
-    $("#filter-by-status-active").click(function () {
-        
-        var dataTable = $('#dataGrid').dxDataGrid('instance');
-        dataTable.filter(["ContractStatusID", "=", 1]); // Active
-        console.log(dataTable.getCombinedFilter());
+    // i = 1 Status canceled
+    // i = 2 Status active
+    // i = 3 closed
+    // i = 4 preliminary
+    $("#filter-by-status-active").click(function () 
+    {
+        // Acum s-a apasat butonul de checked
+        if ($("#filter-by-status-active").is(':checked'))
+            arrayOfValuesToBeFilteredFromHeaderCheckboxes[2] = 1;
+        else 
+            // acum s-a debifat
+            // Pozitia reprezinta statusul iar valoarea 1 / 0 daca e activ filtrul sau nu
+            arrayOfValuesToBeFilteredFromHeaderCheckboxes[2] = 0;
+        applyFiltersToDatagrid('ContractStatusID');
     });
     $("#filter-by-status-canceled").click(function () {
-        var dataTable = $('#dataGrid').dxDataGrid('instance');
-        dataTable.filter(["ContractStatusID", "=", 2]); // Canceled
+        // Acum s-a apasat butonul de checked
+        if ($("#filter-by-status-canceled").is(':checked'))
+            arrayOfValuesToBeFilteredFromHeaderCheckboxes[1] = 1;
+        else 
+            // acum s-a debifat
+            // Pozitia reprezinta statusul iar valoarea 1 / 0 daca e activ filtrul sau nu
+            arrayOfValuesToBeFilteredFromHeaderCheckboxes[1] = 0;
+        applyFiltersToDatagrid('ContractStatusID');
     });
-
-    // !!!!!!!!!!!!!!!!!!!!!
-    // Ce mai ai de facut e asa:
-    // schimba cursorul sa fie pointer cand este peste checkboxuri
-    // Fa sa poti combina filtrele, adica sa fie mai multe de ales si sa le afiseze pe taote
-    // Fa sa se stearga filtrul daca nu e apasat
+    $("#filter-by-status-closed").click(function () {
+        // Acum s-a apasat butonul de checked
+        if ($("#filter-by-status-closed").is(':checked'))
+            arrayOfValuesToBeFilteredFromHeaderCheckboxes[3] = 1;
+        else 
+            // acum s-a debifat
+            // Pozitia reprezinta statusul iar valoarea 1 / 0 daca e activ filtrul sau nu
+            arrayOfValuesToBeFilteredFromHeaderCheckboxes[3] = 0;
+        applyFiltersToDatagrid('ContractStatusID');
+    });
+    $("#filter-by-status-preliminary").click(function () {
+        // Acum s-a apasat butonul de checked
+        if ($("#filter-by-status-preliminary").is(':checked'))
+            arrayOfValuesToBeFilteredFromHeaderCheckboxes[4] = 1;
+        else 
+            // acum s-a debifat
+            // Pozitia reprezinta statusul iar valoarea 1 / 0 daca e activ filtrul sau nu
+            arrayOfValuesToBeFilteredFromHeaderCheckboxes[4] = 0;
+        applyFiltersToDatagrid('ContractStatusID');
+    });
 
 
 }); // END READY FUNCTION
 
-// arrayOfValuesToBeFilteredFromHeaderCheckboxes este un vector in care fiecare element reprezinta o valoare de filtru. Eu iau toate aceste valori si din ele creez arrayOfFilters
-// var arrayOfValuesToBeFilteredFromHeaderCheckboxes = new array();
-// Functia aplica modificarile bazat pe array-ul de mai sus
-// function applyFiltersToDatagridFromHeaderCheckboxes () {
 
-// }
+
+// Functia aplica modificarile bazat pe array-ul arrayOfValuesToBeFilteredFromHeaderCheckboxes
+function applyFiltersToDatagrid(columnNameFromDB) 
+{
+    // referinta  https://www.devexpress.com/Support/Center/Question/Details/T483994/dxdatagrid-how-to-specify-a-filter-for-multiple-values
+    var dataTable = $('#dataGrid').dxDataGrid('instance');
+    dataTable.clearFilter(); // scapam de filtrele precedente
+    var filter = []; // vectorul final de aplicat
+    var executeFilter = 0; // daca aplicam sau nu filtre
+    for (var i = 1; i < arrayOfValuesToBeFilteredFromHeaderCheckboxes.length; i++)
+    {
+        // Pozitia i reprezinta statusul. i = 1 (status active)
+        // arrayOfValuesToBeFilteredFromHeaderCheckboxes[i] = 1/0 indica daca este sau nu de aplicat filtrul pentru statusul i
+        if (arrayOfValuesToBeFilteredFromHeaderCheckboxes[i])
+        {
+            executeFilter = 1;
+            filter.push([columnNameFromDB, "=", i]);
+            filter.push("or");
+        }
+    }
+    filter.pop(); // ultimul 'or'
+    // Daca nu avem niciun filtru, deja am dat clear la ele la inceput
+    if (executeFilter)
+        dataTable.filter(filter);
+}
 
 
 // Variabilele astea sunt vectori de obiecte
@@ -67,10 +120,10 @@ $(function() {
 var statusTable, organisationTable, clientsTable, contractTypeTable;
 
 statustable = [{
-    "StatusID": 1,
+    "StatusID": 2,
     "Name": "Active"
 }, {
-    "StatusID": 2,
+    "StatusID": 1,
     "Name": "Canceled"
 }, {
     "StatusID": 3,
@@ -127,6 +180,9 @@ function draw_table(table_data)
                 caption:'Status',
                 dataField:'ContractStatusID',
                 alignment: 'center',
+                // allow filtering si headerfiltering sunt puse asa ca sa dispara de la status filtrarea din cell-ul de jos
+                allowFiltering: false,
+                allowHeaderFiltering: true,
                 allowGrouping: true,
                 lookup: {
                     dataSource: statustable,
@@ -231,6 +287,9 @@ function draw_table(table_data)
                 exportTo: "Export"
             }
         },
+        selection: {
+            mode: "multiple"
+        },
         groupPanel: {
             visible: true
         },
@@ -247,10 +306,6 @@ function draw_table(table_data)
             showPageSizeSelector: true,
             visible: true
         },
-        masterDetail: {
-            enabled: true
-        },
-       
         stateStoring: {
             enabled: true,
             type: 'SessionStorage',
@@ -301,10 +356,9 @@ function draw_table(table_data)
             };
             contracts_action_editAddDelete(json_toSend);
         }
-        // https://www.devexpress.com/Support/Center/Question/Details/T451111/dxdatagrid-how-to-get-row-values-on-editing-adding-of-a-row
-        // site ca sa vezsi edit-ul
     });
 }
+
 
 // Functie apelata din eventul de add/edit/delete contracts din dxdatagrid 
 function contracts_action_editAddDelete(json_toSend) 
