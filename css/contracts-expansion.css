@@ -1,4 +1,16 @@
 
+#dataGrid {
+    margin-bottom: 40px;
+}
+
+/* Este headerul de deasupra tabelului */
+.dataGrid-custom-header {
+    margin-bottom: 0;
+    background-color: white;
+    border-bottom: 1px solid lightgrey;
+    border-top: 1px solid lightgrey;
+}
+
 .container1 {
     padding: 0;
     background-color: white;
@@ -14,10 +26,15 @@ h3.page-header {
     margin-bottom: 50px;
 }
 
-/* margine pentru formurille din dreapta din popup*/
+/* margine pentru cell-urile din dreapta din popup la edit si add*/
 .popupCells {
     margin-right: 15px;
 }
 
+/* Label si inputurile de la checkboxurile de filtrare rapida din header */
+label[class^="checkbox-label-filter"],
+input[id^="filter-by-status"] {
+    cursor: pointer;
+}
 
 

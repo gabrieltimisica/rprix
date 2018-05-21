@@ -37,10 +37,11 @@
     <!-- Este folosit in mare parte css-ul de la home, dar vreau sa dau overwrite la cateva deci pun unul separat dupa -->
     <link rel="stylesheet" href="../css/contracts-expansion.css">
     <!-- Devextreme --> 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.js"></script>
-    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/17.2.7/js/dx.all.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/17.2.7/css/dx.common.css" />
     <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/17.2.7/css/dx.light.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.js"></script>
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/17.2.7/js/dx.all.js"></script>
+
     <!-- Ready function -->
     <script src="../js/scripts/contracts.js"></script>
     <title>Contracts</title>
@@ -84,15 +85,24 @@
         <h3 class="page-header text-center">Gestiunea contractelor</h3>
         <!-- Headerul de deasupra tabelului pentru custom buttons -->
         <div class="dataGrid-custom-header col">
-            <button id="clear-datagrid-filters" type="button">Clear filters</button>
-            <input id="filter-by-status-active" type="checkbox">
-            <label for="filter-by-status-active">Active</label>
-            <input id="filter-by-status-expired" type="checkbox">
-            <label for="filter-by-status-expired">Expired </label>
-            <input id="filter-by-status-canceled" type="checkbox">
-            <label for="filter-by-status-canceled">Canceled</label>
-            <input id="filter-by-status-preliminary" type="checkbox">
-            <label for="filter-by-status-preliminary">Preliminary</label>
+            <div class="col-2">
+                <!-- Quick filters -->
+                <input id="filter-by-status-active" type="checkbox">
+                <label class="checkbox-label-filter" for="filter-by-status-active"> Active </label>
+                <br>
+                <input id="filter-by-status-closed" type="checkbox">
+                <label class="checkbox-label-filter" for="filter-by-status-closed"> Closed </label>
+                <br>
+                <input id="filter-by-status-canceled" type="checkbox">
+                <label class="checkbox-label-filter" for="filter-by-status-canceled"> Canceled </label>
+                <br>
+                <input id="filter-by-status-preliminary" type="checkbox">
+                <label class="checkbox-label-filter" for="filter-by-status-preliminary"> Preliminary </label>
+                <br>
+                <button id="clear-datagrid-filters" type="button">Clear filters</button>
+            </div>
+            <div class="col-2">
+            </div>
         </div> <!--  end custom header  -->
         <div id='dataGrid'></div>
     </div> <!-- END container -->

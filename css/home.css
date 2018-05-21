@@ -130,22 +130,7 @@ a.menu-item:hover {
 }
 
 
-/* Contracts page 
--------------------------------------- */
 
-#dataGrid {
-    margin-bottom: 40px;
-}
-/* sub path se afla rect */
-
-/* Este headerul de deasupra tabelului */
-.dataGrid-custom-header {
-    height: 50px;
-    margin-bottom: 0;
-    background-color: white;
-    border-bottom: 1px solid lightgrey;
-    border-top: 1px solid lightgrey;
-}
 
 
 

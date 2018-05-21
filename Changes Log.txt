@@ -1,11 +1,34 @@
 TO DO :
+	<Priotate MARE ===================>
+		Dropdown la clienti si organizatii
+			- Sa adaug buton de search in stanga la Dropdown
+			- Sa scot posibilitatea de a trece prin lista folosind sagetile de la tastatura
+			- Sa se trimita ajax cu stringul curent si sa caute in baza de date valorile asemanatoare
+		Privilegii
+		Sa functioneze edit-ul
+		Sa scoatem ora de la data inceperii si expirarii
+		Sa poata adauga contractul si alte fisiere in format pdf
+		Sa poata adauga din interfata o organizatie, un client, contract type
+		Sa facem un fel de path ca sa se poata intoarca la projects
+
+	<Prioritate MICA ===================>
+		Din edit delete sa punem iconite
+		Buton care apare in interfata de add se numeste Save. Trebuie schimbat in add
+		Sa iesi din add edit folosind esc + intrebare (intrebare doar daca sunt modificari si nu sunt salvate)
+		Statusurile sa apara cu culori 
+		Reset to default la interfata
 
 
 
 
+====================================================================================================== VERSION 1.1
+================================ 21.05.2018
+Gabi
+	Checkboxuri functionale de quick filter in functie de statusuri. 
+	Checkboxurile functioneaza concomitent.
+	Schimbat cursorul pentru label si checkboxuri
+	Am scos filtrarea din header pentru status
 
-
-================================v1 17.04.2018
-Vladimir:
-Gabi:
-- added colors to index.php
+================================ 18.05.2018
+Gabi
+	Buton de clear filters
