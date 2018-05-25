@@ -83,6 +83,10 @@
 
         <!-- Content - - - - - - - - - - - - - - - - - -->
         <h3 class="page-header text-center">Gestiunea contractelor</h3>
+        <h5 class="mb-3">
+            <a href="../" style="color: #aa4b4d">Projects / </a>
+            <a href="" style="">Gestiunea Contractelor</a>
+        </h5>
         <!-- Headerul de deasupra tabelului pentru custom buttons -->
         <div class="dataGrid-custom-header col">
             <div class="col-2">

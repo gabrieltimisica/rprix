@@ -6,10 +6,8 @@ TO DO :
 			- Sa se trimita ajax cu stringul curent si sa caute in baza de date valorile asemanatoare
 		Privilegii
 		Sa functioneze edit-ul
-		Sa scoatem ora de la data inceperii si expirarii
 		Sa poata adauga contractul si alte fisiere in format pdf
 		Sa poata adauga din interfata o organizatie, un client, contract type
-		Sa facem un fel de path ca sa se poata intoarca la projects
 
 	<Prioritate MICA ===================>
 		Din edit delete sa punem iconite
@@ -28,6 +26,11 @@ Gabi
 	Checkboxurile functioneaza concomitent.
 	Schimbat cursorul pentru label si checkboxuri
 	Am scos filtrarea din header pentru status
+	Din datetime in date la add / edit
+	Am pus path de selectat intre pagini
+Vladimir
+	Ordonat edit / add 
+	Adaugat short description
 
 ================================ 18.05.2018
 Gabi
