@@ -1,34 +1,21 @@
 TO DO :
 	<Priotate MARE ===================>
-		Dropdown la clienti si organizatii
-			- Sa adaug buton de search in stanga la Dropdown
-			- Sa scot posibilitatea de a trece prin lista folosind sagetile de la tastatura
-			- Sa se trimita ajax cu stringul curent si sa caute in baza de date valorile asemanatoare
+		La dropdownul de clienti si organizatii exista o mica problema
+			Cand scrii de la tine o valoare buna o considera proasta
+			Fa sa apara o afisare de ok / not ok si poate faci sa fie si inputurile cu o culoare
+			Asta nu e prioritar oricum
 		Privilegii
-		Sa functioneze edit-ul
-		Sa scoatem ora de la data inceperii si expirarii
 		Sa poata adauga contractul si alte fisiere in format pdf
+		Sa preluam datele pentru dropdown pentru contracttype, astea mici
 		Sa poata adauga din interfata o organizatie, un client, contract type
-		Sa facem un fel de path ca sa se poata intoarca la projects
+		Sa schimbam din BD sa nu mai trimitem toate contractele ca facem flooding
+		Sa punem buton de afisare contract in datagrid
+		Buton de multiple add
+		Nu merge scrollul la organizatii la dropdown din mousewheel
+		Sa nu se inchida popup ul daca add row
 
 	<Prioritate MICA ===================>
-		Din edit delete sa punem iconite
 		Buton care apare in interfata de add se numeste Save. Trebuie schimbat in add
 		Sa iesi din add edit folosind esc + intrebare (intrebare doar daca sunt modificari si nu sunt salvate)
-		Statusurile sa apara cu culori 
 		Reset to default la interfata
-
-
-
-
-====================================================================================================== VERSION 1.1
-================================ 21.05.2018
-Gabi
-	Checkboxuri functionale de quick filter in functie de statusuri. 
-	Checkboxurile functioneaza concomitent.
-	Schimbat cursorul pentru label si checkboxuri
-	Am scos filtrarea din header pentru status
-
-================================ 18.05.2018
-Gabi
-	Buton de clear filters
+		
