@@ -87,8 +87,8 @@
             <a href="#" class="col-3 menu-item text-center unavailable">
                 <p class="align-content-center">Projects</p>
             </a>
-            <a href="#" class="col-3 menu-item text-center unavailable">
-                <p class="align-content-center">Unavailable</p>
+            <a href="metadata.php" class="col-3 menu-item text-center">
+                <p class="align-content-center">Metadata</p>
             </a>
         </div> <!--  end div row -->
         <div class="row d-flex justify-content-around">

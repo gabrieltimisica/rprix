@@ -37,4 +37,94 @@ input[id^="filter-by-status"] {
     cursor: pointer;
 }
 
+/* Culoarea iconului de filtru din header atunci cand este selectat un filtru */
+.dx-header-filter {
+    color: red!important;    
+    /* #aa4b4d */
+}
+/* Culoarea iconului de filtru din header atunci cand NU este selectat un filtru */
+.dx-header-filter-empty {
+    color: rgba(149, 149, 149, 0.5)!important;    
+}
 
+/* =========================================================================>
+Edit form  */
+
+.pos-relative {
+    position: relative; 
+}
+
+ /* Inputurile customizate pentru search print valoare */
+.input-edit-form {
+    width: 602px;
+    height: 34px;
+    border-radius: 4px;
+    border: 1px solid lightgrey;
+    padding: 7px 9px 8px;
+    position: relative;
+    text-decoration: none;
+    outline: none;
+    box-shadow: none;
+}
+
+.input-edit-form:focus {
+    border-color: #337AB7;
+}
+
+.input-edit-form:hover {
+    border-color: #ADCAE2;
+}
+
+/* Lista care apare cand dam search in inputul de la editForm dxdatagrid */
+ul.dropdown-input {
+    position: absolute;
+    background-color: white;
+    top: 34px;
+    z-index: 9999;
+    width: 602px;
+    display: block;
+    list-style-type: none;
+    padding-left: 0;
+    border: 1px solid lightgrey;
+    -webkit-box-shadow: 0px 3px 19px -9px rgba(0,0,0,0.51);
+    -moz-box-shadow: 0px 3px 19px -9px rgba(0,0,0,0.51);
+    box-shadow: 0px 3px 19px -9px rgba(0,0,0,0.51);
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    max-height: 250px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+/* Butonul pe care apasam search */
+button.search-btt {
+    position: absolute;
+    right: 3px;
+    top: 1px;
+    font-size: 21px;
+    background-color: white;
+    border: none;
+    width: 29px;
+    height: 29px;
+    padding: 0;
+}
+
+/* Liniile din dropdownul din editform */
+.dropdown-element-editform {
+    height: 30px;
+    line-height: 30px; /* daca line-height e acelasi cu height, elementul va fi centrat verical */
+    width: inherit;
+    display: block;
+    padding-left: 5px;
+    left: 2px;
+    cursor: pointer;
+}
+
+.dropdown-element-editform:hover {
+    background-color: #eaeaea;
+}
+
+/* Butonul de search din edit form */
+ul.dropdown-input span.fa-search {
+    width: 30px;
+}
