@@ -92,17 +92,17 @@
         <div class="dataGrid-custom-header col">
             <div class="col-2">
                 <!-- Quick filters -->
-                <input id="filter-by-status-active" type="checkbox">
-                <label class="checkbox-label-filter" for="filter-by-status-active"> Active </label>
+                <input id="filter-by-status-active" class="filter-checkbox" type="checkbox">
+                <label class="checkbox-label-filter checkbox-active" for="filter-by-status-active"> Active </label>
                 <br>
-                <input id="filter-by-status-closed" type="checkbox">
-                <label class="checkbox-label-filter" for="filter-by-status-closed"> Closed </label>
+                <input id="filter-by-status-closed" class="filter-checkbox" type="checkbox">
+                <label class="checkbox-label-filter checkbox-closed" for="filter-by-status-closed"> Closed </label>
                 <br>
-                <input id="filter-by-status-canceled" type="checkbox">
-                <label class="checkbox-label-filter" for="filter-by-status-canceled"> Canceled </label>
+                <input id="filter-by-status-canceled" class="filter-checkbox" type="checkbox">
+                <label class="checkbox-label-filter checkbox-canceled" for="filter-by-status-canceled"> Canceled </label>
                 <br>
-                <input id="filter-by-status-preliminary" type="checkbox">
-                <label class="checkbox-label-filter" for="filter-by-status-preliminary"> Preliminary </label>
+                <input id="filter-by-status-preliminary" class="filter-checkbox" type="checkbox">
+                <label class="checkbox-label-filter checkbox-preliminary" for="filter-by-status-preliminary"> Preliminary </label>
                 <br>
                 <button id="clear-datagrid-filters" type="button">Clear filters</button>
             </div>
