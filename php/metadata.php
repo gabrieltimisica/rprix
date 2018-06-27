@@ -53,20 +53,11 @@
                 <div class="d-sm-block d-none pl-3 pr-3">
                     <p class="mb-0">LOGO ROMPRIX</p>
                 </div>
-                <!-- <div class="col-3 d-none d-lg-block text-center">
-                    <p class="mb-0">Bine ai venit!</p>
-                </div> -->
                 <div class="display-user col col-sm-6 col-md-5 col-lg-3 d-flex justify-content-between justify-content-sm-end align-items-center">
-                    <div class="d-inline-block col">
+                    <div class="d-inline-block">
                         <img src="https://png.icons8.com/ios/50/000000/gender-neutral-user-filled.png">
-                        <span>Gabriel Timisica
-                            <?php 
-                                // echo ($_SESSION['prenume'] + " " + $_SESSION['nume']);
-                            ?> 
-                        </span> 
+                        <?php echo $_SESSION['prenume'] . " " . $_SESSION['nume']; ?> 
                     </div> 
-
-                    <!-- <img class="menu-icon d-none d-sm-inline-block align-items-center" src="https://png.icons8.com/ios-glyphs/50/000000/menu.png"> -->
                     <div class="dropdown-block d-sm-inline-block align-items-center">
                         <img class="menu-icon" style="" src="https://png.icons8.com/ios-glyphs/50/000000/menu.png">
                         <ul class="dropdown-menu1 not-visible">
@@ -78,12 +69,10 @@
             </div> <!-- end div d-flex -->
         </div> <!-- end div topnav -->
 
-
-
         <!-- Content - - - - - - - - - - - - - - - - - -->
         <h3 class="page-header text-center">Gestiunea contractelor</h3>
         <h5 class="mb-3">
-            <a href="../" style="color: #aa4b4d">Projects / </a>
+            <a href="home.php" style="color: #aa4b4d">Projects / </a>
             <a href="" style="">Metadata</a>
         </h5>
         <!-- Headerul de deasupra tabelului pentru custom buttons -->

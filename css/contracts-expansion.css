@@ -21,9 +21,10 @@
     z-index: 999;
 }
 
-h3.page-header {
+.page-header {
     padding-top: 70px;
     margin-bottom: 50px;
+    color: #aa4b4d;
 }
 
 /* margine pentru cell-urile din dreapta din popup la edit si add*/
@@ -75,15 +76,16 @@ Edit form  */
     border-color: #ADCAE2;
 }
 
-/* Lista care apare cand dam search in inputul de la editForm dxdatagrid */
-ul.dropdown-input {
+/* Tabela care apare cand dam search in inputul de la editForm dxdatagrid */
+table.dropdown-input {
     position: absolute;
     background-color: white;
-    top: 34px;
+    top: 70px;
+    /* line-height: 69px; */
     z-index: 9999;
     width: 602px;
     display: block;
-    list-style-type: none;
+    /* list-style-type: none; */
     padding-left: 0;
     border: 1px solid lightgrey;
     -webkit-box-shadow: 0px 3px 19px -9px rgba(0,0,0,0.51);
@@ -91,10 +93,45 @@ ul.dropdown-input {
     box-shadow: 0px 3px 19px -9px rgba(0,0,0,0.51);
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
-    max-height: 250px;
+    max-height: 350px;
     overflow-y: scroll;
     overflow-x: hidden;
 }
+
+/* Divul de deasupra tabelului */
+div.table-header {
+    z-index: 9999;
+    top: 35px;
+    position: absolute;
+    padding-top: 4px;
+    padding-left: 8px;
+    width: 602px;
+    height: 35px;
+    background-color: white;
+    border: 1px solid lightgrey;
+    border-bottom: 1px solid black;
+    border-top: none;
+    -webkit-box-shadow: 0px 3px 19px -9px rgba(0,0,0,0.51);
+    -moz-box-shadow: 0px 3px 19px -9px rgba(0,0,0,0.51);
+    box-shadow: 0px 3px 19px -9px rgba(0,0,0,0.51);
+}
+/* Cele 2 spanuri din headerul de la table
+in care tin cuvintele orgname si adresa */
+div.table-header span {
+    height: 30px;
+    line-height: 30px;
+    font-weight: bold;
+}
+
+.width-290px {
+    width: 290px;
+}
+
+table.dropdown-input td {
+    width: 301px !important;
+    padding-left: 8px;
+}
+
 
 /* Butonul pe care apasam search */
 button.search-btt {
@@ -111,11 +148,7 @@ button.search-btt {
 
 /* Liniile din dropdownul din editform */
 .dropdown-element-editform {
-    height: 30px;
-    line-height: 30px; /* daca line-height e acelasi cu height, elementul va fi centrat verical */
-    width: inherit;
-    display: block;
-    padding-left: 5px;
+    height: 35px !important;
     left: 2px;
     cursor: pointer;
 }
@@ -125,6 +158,30 @@ button.search-btt {
 }
 
 /* Butonul de search din edit form */
-ul.dropdown-input span.fa-search {
+table.dropdown-input span.fa-search {
     width: 30px;
 }
+
+/* butoanele de clear din popup inputs */
+.clear-text-btn {
+    font-size: 50px;
+    width: 30px;
+    position: absolute;
+    padding: 0;
+    right: 30px;
+    height: 30px;
+}
+
+.clear-text-icon{
+    font-size: 20px;
+    position: absolute;
+    top: 7px;
+    right: 40px;
+    cursor: pointer;
+}
+
+.pointer-e-none {
+    pointer-events: none;
+}
+
+

@@ -1,7 +1,6 @@
 <?php
     // Aici preiau toate contractele bazandu-ma pe id-ul utilizatorului din cookie
     include("../db_config.php");
-    ini_set('memory_limit', '512M');
     // error_reporting(0);
 
     $data_sent = json_decode($_POST['myData']);
@@ -11,14 +10,18 @@
     {
         die("Connection failed: " . $conn->connect_error);
     } 
-
-    $procedure_return = $conn->prepare('CALL rpx_sp_ContractsView(?)');
-    $procedure_return->bind_param("i",$data_sent->userID);
+    // print_r($data_sent);
+    $procedure_return = $conn->prepare('CALL rpx_sp_VerifyEditStatus(?, ?, ?)');
+    $procedure_return->bind_param(
+        "iii",
+        $data_sent->actionID,
+        $data_sent->contractID,
+        $data_sent->userID);
     $procedure_return->execute();
     $procedure_return = $procedure_return->get_result();
-
+        
     $data_obj = new ArrayObject();
-    while($row_obj = mysqli_fetch_object($procedure_return))
+    while($row_obj = mysqli_fetch_assoc($procedure_return))
     {
         $data_obj->append($row_obj);
     }

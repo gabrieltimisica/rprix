@@ -1,4 +1,7 @@
 <?php
+    // In scriptul asta primesc de la baza de date valoarea pe care o caut cu
+    // dropdownurile de organizatii si clienti
+    // in popupul de editare
     include('../db_config.php');
     $data_sent = json_decode($_POST['myData']);
 

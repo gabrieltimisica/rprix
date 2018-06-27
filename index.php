@@ -79,8 +79,8 @@
             {
                 $_SESSION['username'] = $procedure_return->LoginName;
                 $_SESSION['userID'] = $procedure_return->UserID;
-                // $_SESSION['nume'] = $procedure_return->nume;
-                // $_SESSION['prenume'] = $procedure_return->prenume;
+                $_SESSION['nume'] = $procedure_return->LastName;
+                $_SESSION['prenume'] = $procedure_return->FirstName;
                 // $_SESSION['privilegiu'] = $procedure_return->privilegiu;
                 unset($_SESSION['username_value_attribute']);
                 echo "<script> window.location.replace('php/home.php'); </script>"; // e in loc de header pentru ca headerul il poti pune doar in.... header sus :))
@@ -115,8 +115,8 @@
 </head>
 <body>
     </div> <!-- End div container alert-box -->
-    <div class="container">
-        <h2 class="mb-5 text-center">Logo Romprix </h2>
+    <div class="container pt-3">
+        <img class='mb-4 d-block mx-auto' src="img/romprix-logo.png" alt="">
         <!-- Aici sunt afisate erorile. Initial este d-none, functia de jquery o sa schimbe asta daca exista erori -->
         <div class="error-alert-box col mb-2"> 
             <p class="mb-0"></p>

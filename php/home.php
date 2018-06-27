@@ -14,13 +14,15 @@
         header('Location: ../index.php'); // daca nu are ce trebuie, il trimitem la login
     } else  // Are sesiune temporara buna sau cookie
     {
+        if (!isset($_SESSION['keep_logged']))
+            $_SESSION['keep_logged'] = 0;   
         if ($_SESSION['keep_logged'] == 1) // daca foloseste cookiuri, il updatam cu noul id
         {
             setcookie("c_id", session_id(), $_SESSION["cookie_exp_date"], '/', "", FALSE, TRUE);
         }
         else
         {
-            setcookie("c_id", FALSE, -1, '/', "", FALSE, TRUE);
+            // setcookie("c_id", FALSE, -1, '/', "", FALSE, TRUE);
         }
 
     } // end else
@@ -41,23 +43,15 @@
         <div class="topnav">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-sm-block d-none pl-3 pr-3">
-                    <p class="mb-0">LOGO ROMPRIX</p>
+                    <span class="mb-0" style='font-size: 35px'>ROMPRIX</span>
+                    <span class="" style="top: 3px; left: 335px; position: absolute">&#169;</span>
                 </div>
-                <!-- <div class="col-3 d-none d-lg-block text-center">
-                    <p class="mb-0">Bine ai venit!</p>
-                </div> -->
-                <div class="display-user col-6 col-sm-4 d-flex justify-content-end align-items-center">
+                <div class="display-user col col-sm-6 col-md-5 col-lg-3 d-flex justify-content-between justify-content-sm-end align-items-center">
                     <div class="d-inline-block">
                         <img src="https://png.icons8.com/ios/50/000000/gender-neutral-user-filled.png">
-                        <span>Gabriel Timisica
-                            <?php 
-                                // echo ($_SESSION['prenume'] + " " + $_SESSION['nume']);
-                            ?> 
-                        </span> 
+                        <?php echo $_SESSION['prenume'] . " " . $_SESSION['nume']; ?> 
                     </div> 
-
-                    <!-- <img class="menu-icon d-none d-sm-inline-block align-items-center" src="https://png.icons8.com/ios-glyphs/50/000000/menu.png"> -->
-                    <div class="dropdown-block d-none d-sm-inline-block align-items-center">
+                    <div class="dropdown-block d-sm-inline-block align-items-center">
                         <img class="menu-icon" style="" src="https://png.icons8.com/ios-glyphs/50/000000/menu.png">
                         <ul class="dropdown-menu1 not-visible">
                             <li>Settings</li>
@@ -65,19 +59,6 @@
                         </ul>    
                     </div>
                 </div> <!-- end div display-user -->
-                <div class="dropdown-block d-block d-sm-none">
-                    <!-- <img class="menu-icon" style="" src="https://png.icons8.com/ios-glyphs/50/000000/menu.png">
-                    <ul class="dropdown-menu1 not-visible">
-                        <li class="text-align" >Settings</li>
-                        <li>Logout</li>
-                    </ul>     -->
-                    <img class="menu-icon" style="" src="https://png.icons8.com/ios-glyphs/50/000000/menu.png">
-                        <ul class="dropdown-menu1 not-visible">
-                            <li>Settings</li>
-                            <li class="loggout-btt">Logout</li>
-                        </ul>  
-                </div>
-                
             </div> <!-- end div d-flex -->
         </div> <!-- end div topnav -->
         <div class="row d-flex justify-content-around">
