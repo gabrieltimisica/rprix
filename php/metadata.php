@@ -35,21 +35,19 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <link rel="stylesheet" href="../css/home.css">
     <!-- Este folosit in mare parte css-ul de la home, dar vreau sa dau overwrite la cateva deci pun unul separat dupa -->
-    <link rel="stylesheet" href="../css/contracts-expansion.css">
+    <link rel="stylesheet" href="../css/metadata.css">
     <!-- Devextreme --> 
     <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
     <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.js"></script>
     <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.js"></script>
+
     <!-- Ready function -->
-    <script src="../js/scripts/contracts.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <!-- Notify.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/notify.min.js"></script>
+    <script src="../js/scripts/metadata.js"></script>
     <title>Contracts</title>
 </head>
 <body>
-    <div class="col container1">
+    <div class="col container">
         <div class="topnav">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-sm-block d-none pl-3 pr-3">
@@ -86,43 +84,15 @@
         <h3 class="page-header text-center">Gestiunea contractelor</h3>
         <h5 class="mb-3">
             <a href="../" style="color: #aa4b4d">Projects / </a>
-            <a href="" style="">Gestiunea Contractelor</a>
+            <a href="" style="">Metadata</a>
         </h5>
         <!-- Headerul de deasupra tabelului pentru custom buttons -->
-        <div class="dataGrid-custom-header col">
-            <div class="col-2">
-                <!-- Quick filters -->
-                <input id="filter-by-status-active" class="filter-checkbox" type="checkbox">
-                <label class="checkbox-label-filter checkbox-active" for="filter-by-status-active"> Active </label>
-                <br>
-                <input id="filter-by-status-closed" class="filter-checkbox" type="checkbox">
-                <label class="checkbox-label-filter checkbox-closed" for="filter-by-status-closed"> Closed </label>
-                <br>
-                <input id="filter-by-status-canceled" class="filter-checkbox" type="checkbox">
-                <label class="checkbox-label-filter checkbox-canceled" for="filter-by-status-canceled"> Canceled </label>
-                <br>
-                <input id="filter-by-status-preliminary" class="filter-checkbox" type="checkbox">
-                <label class="checkbox-label-filter checkbox-preliminary" for="filter-by-status-preliminary"> Preliminary </label>
-                <br>
-                <button id="clear-datagrid-filters" type="button">Clear filters</button>
+        <div class="display-container">
+            <div class="form-group">
+                <input type="checkbox"> Agree
             </div>
-            <div class="col-3">
-                <button id="reset-workspace" type="button" >Reset workspace</button>
-                <input id="save-workspace-checkbox" type="checkbox" checked>
-                <label for="save-workspace-checkbox">Continue where I left off</label>
-            </div>
-        </div> <!--  end custom header  -->
-        <div id='dataGrid'></div>
+        </div>
     </div> <!-- END container -->
 </body>
-
-
-<script>
-    // Aici salvez in variabila useridfromsession id-ul utilizatorului ca sa nu dau ajax mai tarziu, ca sa il trimit cand dau delete prin ajax sa stim cine a facut modificarea
-    var userID_fromSession = "<?php echo $_SESSION['userID']; ?>";
-    // Daca vrea sau nu sa ii apara vechiul workspace
-    var continueWhereILeft = "<?php echo $_SESSION['saveWorkspaceOnExit'] ?>";
-    console.log("continue din sesiune", continueWhereILeft);
-</script>
 </html>
 

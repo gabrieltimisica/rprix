@@ -1,0 +1,28 @@
+
+#dataGrid {
+    margin-bottom: 40px;
+}
+
+/* Este headerul de deasupra tabelului */
+.dataGrid-custom-header {
+    margin-bottom: 0;
+    background-color: white;
+    border-bottom: 1px solid lightgrey;
+    border-top: 1px solid lightgrey;
+}
+
+.container {
+    padding: 0;
+    background-color: white;
+}
+
+.topnav {
+    position: fixed;
+    z-index: 999;
+}
+
+h3.page-header {
+    padding-top: 70px;
+    margin-bottom: 50px;
+}
+
