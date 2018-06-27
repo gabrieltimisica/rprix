@@ -41,6 +41,11 @@ $(function() {
     // Butonul de clear filters
     $("#clear-datagrid-filters").click(function () {
         var dataTable = $('#dataGrid').dxDataGrid('instance');
+        $(".checkbox-active").css("font-weight","Normal");
+        $(".checkbox-canceled").css("font-weight","Normal");
+        $(".checkbox-closed").css("font-weight","Normal");
+        $(".checkbox-preliminary").css("font-weight","Normal");
+        $(".filter-checkbox").prop('checked', false);
         dataTable.clearFilter();
     });
 
@@ -54,41 +59,65 @@ $(function() {
     {
         // Acum s-a apasat butonul de checked
         if ($("#filter-by-status-active").is(':checked'))
-            arrayOfValuesToBeFilteredFromHeaderCheckboxes[2] = 1;
+            {
+                arrayOfValuesToBeFilteredFromHeaderCheckboxes[2] = 1;
+                $(".checkbox-active").css("font-weight","Bold");
+            }
         else 
             // acum s-a debifat
             // Pozitia reprezinta statusul iar valoarea 1 / 0 daca e activ filtrul sau nu
-            arrayOfValuesToBeFilteredFromHeaderCheckboxes[2] = 0;
+            {
+                arrayOfValuesToBeFilteredFromHeaderCheckboxes[2] = 0;
+                $(".checkbox-active").css("font-weight","Normal");
+            }
         applyFiltersToDatagrid('ContractStatusID');
     });
     $("#filter-by-status-canceled").click(function () {
         // Acum s-a apasat butonul de checked
         if ($("#filter-by-status-canceled").is(':checked'))
-            arrayOfValuesToBeFilteredFromHeaderCheckboxes[1] = 1;
+            {
+                arrayOfValuesToBeFilteredFromHeaderCheckboxes[1] = 1;
+                $(".checkbox-canceled").css("font-weight","Bold");
+            }
         else 
             // acum s-a debifat
             // Pozitia reprezinta statusul iar valoarea 1 / 0 daca e activ filtrul sau nu
-            arrayOfValuesToBeFilteredFromHeaderCheckboxes[1] = 0;
+            {
+                arrayOfValuesToBeFilteredFromHeaderCheckboxes[1] = 0;
+                $(".checkbox-canceled").css("font-weight","Normal");
+            }
         applyFiltersToDatagrid('ContractStatusID');
     });
     $("#filter-by-status-closed").click(function () {
         // Acum s-a apasat butonul de checked
         if ($("#filter-by-status-closed").is(':checked'))
-            arrayOfValuesToBeFilteredFromHeaderCheckboxes[3] = 1;
+            {
+                arrayOfValuesToBeFilteredFromHeaderCheckboxes[3] = 1;
+                $(".checkbox-closed").css("font-weight","Bold");
+            }
         else 
             // acum s-a debifat
             // Pozitia reprezinta statusul iar valoarea 1 / 0 daca e activ filtrul sau nu
-            arrayOfValuesToBeFilteredFromHeaderCheckboxes[3] = 0;
+            {
+                arrayOfValuesToBeFilteredFromHeaderCheckboxes[3] = 0;
+                $(".checkbox-closed").css("font-weight","Normal");
+            }
         applyFiltersToDatagrid('ContractStatusID');
     });
     $("#filter-by-status-preliminary").click(function () {
         // Acum s-a apasat butonul de checked
         if ($("#filter-by-status-preliminary").is(':checked'))
-            arrayOfValuesToBeFilteredFromHeaderCheckboxes[4] = 1;
+            {
+                arrayOfValuesToBeFilteredFromHeaderCheckboxes[4] = 1;
+                $(".checkbox-preliminary").css("font-weight","Bold");
+            }
         else 
             // acum s-a debifat
             // Pozitia reprezinta statusul iar valoarea 1 / 0 daca e activ filtrul sau nu
-            arrayOfValuesToBeFilteredFromHeaderCheckboxes[4] = 0;
+            {
+                arrayOfValuesToBeFilteredFromHeaderCheckboxes[4] = 0;
+                $(".checkbox-preliminary").css("font-weight","Normal");
+            }
         applyFiltersToDatagrid('ContractStatusID');
     });
 
@@ -128,6 +157,7 @@ function applyFiltersToDatagrid(columnNameFromDB)
 var statusTable, organisationTable, clientsTable, contractTypeTable;
 
 statustable = [{
+    "key": 1,
     "StatusID": 2,
     "Name": "Active"
 }, {
@@ -234,15 +264,24 @@ function draw_table(table_data)
                 caption:'Status',
                 dataField:'ContractStatusID',
                 alignment: 'center',
+                // cellTemplate: function (container, options) {
+                //     var div = document.createElement("div");
+                //     $(div).appendTo(container);
+                // },
+                
                 // allow filtering si headerfiltering sunt puse asa ca sa dispara de la status filtrarea din cell-ul de jos
                 allowFiltering: false,
                 allowHeaderFiltering: true,
                 allowGrouping: true,
+                options:{
+ 
+                },
                 lookup: {
                     dataSource: statustable,
                     displayExpr: "Name",
                     valueExpr: "StatusID"
-                }
+                },
+               
             },
             {
                 caption:'Contract Number IN',
@@ -283,10 +322,12 @@ function draw_table(table_data)
             }
         ],
         editing: {
+            mode: 'popup',
             allowAdding: true,
             allowDeleting:true,
             allowUpdating:true,
-            mode: 'popup',
+            useIcons: true,
+            
             form: {
                 colCount: 2,
                 items: [{
@@ -378,18 +419,50 @@ function draw_table(table_data)
                         },
                         cssClass: "popupCells" 
                     }]
-                }
-            ]}, // end form
+                },
+                {
+                    itemType: "group",
+                    colSpan: 2,
+                    template: function(data, itemElement) 
+                    {
+                    var div = document.createElement("div");
+                    itemElement.get(0).appendChild(div);
+                    $(div).dxFileUploader({
+                        multiple: true,
+                        accept: "*",
+                        selectButtonText: "Select file",
+                        labelText: "Upload the contract only in format PDF",
+                        uploadMode: "useForm",
+                        uploadUrl: ""// aici vom pune adresa serverului unde vor fi salvate contractele;
+                    }).dxFileUploader("instance");
+                    }// end template: function(data, itemElement)
+
+                },
+
+                
+            ]}, // end form si ] se inchide items
             popup: {
                 title: "Add contract",
                 showTitle: true,
                 width: 800,
-                height: 600,
+                height: 650,
                 position: {
                     my: "center",
                     at: "center",
                     of: window
                 }
+                // toolbarItems:
+                //     [{
+                //     // location: 'before',
+                //     widget: "dxButton",
+                //     location: "bottom",
+                //     options: {
+                //       text: 'Add',
+                //       icon: 'save'
+                //     },
+                // }]
+                //     // onClick: onClick
+                
             },
             texts: {
                 deleteRow: 'Cancel', // textul delete e inlocuit cu cancel
@@ -450,6 +523,18 @@ function draw_table(table_data)
             type: 'SessionStorage',
             ignoreColumnOptionNames: []
         },
+        onRowPrepared: function (info) {
+            if (info.rowType == 'data')
+                    {
+                    if (info.data.ContractStatusID== 1)
+                        info.rowElement.css("background-color", "#ffa8a8");// daca contractul are status de canceled randul cu contractul respectiv este coloroat cu #ffa8a8
+                    }
+            //     info.rowElement.css('background', 'red');
+     },
+    // onCellPrepared: function(e) {
+    //     // console.log("plm",e);
+    //    console.log( e.cell.text);
+    // },
         onRowInserted: function(e) {
             console.log("asta e");
             console.log(e.data);
@@ -458,6 +543,10 @@ function draw_table(table_data)
                 "userID": userID_fromSession,
                 "action": "addContract"
             };
+            setTimeout(function(){
+                console.log("asdfgh");
+                $(".dx-toolbar-button:nth-of-type(1) span").text("Add");
+            });
             // Adaugam in BD
             contracts_action_editAddDelete(json_toSend);
             // updatam tabelul, ca sa ia si  contractID din BD, pentru ca se creeaza cand ajunge in bd, nu are de unde sa o ia, deci luam toata informatia din nou
@@ -480,10 +569,13 @@ function draw_table(table_data)
             setTimeout(function(){
                 // Div-ul in care se afla titlul de la popup-ul de editare
                 $(".dx-datagrid-edit-popup .dx-toolbar-label .dx-item-content div").text("Edit contract");
+                // $(".dx-toolbar-button:nth-of-type(1) span").text("");
+                // $(".dx-toolbar-button:nth-of-type(2) span").text("");
             }); 
          
         },
         onCellPrepared: function(e) {
+
         },
         // event pentru textarea la contract short description
         onEditorPreparing: function(e) {
@@ -491,6 +583,7 @@ function draw_table(table_data)
                 e.editorName = "dxTextArea";
                 e.colSpan = 2;
             }
+
                 
         },
         onRowRemoved: function(e) {
@@ -519,6 +612,7 @@ function contracts_action_editAddDelete(json_toSend)
         },
         error: function() {
             // console.log("Ori nu merge, ori s-a dat add fara toti parametrii, dar oricum se baga bine in BD deci np");
+            console.log("errrr");
         }
     }); // end ajax
 }
