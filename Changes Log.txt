@@ -1,9 +1,5 @@
 TO DO :
 	<Priotate MARE ===================>
-		La dropdownul de clienti si organizatii exista o mica problema
-			Cand scrii de la tine o valoare buna o considera proasta
-			Fa sa apara o afisare de ok / not ok si poate faci sa fie si inputurile cu o culoare
-			Asta nu e prioritar oricum
 		Privilegii
 		Sa poata adauga contractul si alte fisiere in format pdf
 		Sa preluam datele pentru dropdown pentru contracttype, astea mici
@@ -13,9 +9,12 @@ TO DO :
 		Buton de multiple add
 		Nu merge scrollul la organizatii la dropdown din mousewheel
 		Sa nu se inchida popup ul daca add row
+		Adaugat pentru fiecare status cate o culoare pe datagrid
+		
 
 	<Prioritate MICA ===================>
 		Buton care apare in interfata de add se numeste Save. Trebuie schimbat in add
 		Sa iesi din add edit folosind esc + intrebare (intrebare doar daca sunt modificari si nu sunt salvate)
 		Reset to default la interfata
+		Sa mutam punctele de suspensie din dreapta la add edit in stanga
 		
