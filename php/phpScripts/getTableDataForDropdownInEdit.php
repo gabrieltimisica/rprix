@@ -1,4 +1,5 @@
 <?php
+// PHP UL ASTA NU E DEFINIT
     include('../db_config.php');
     $data_sent = json_decode($_POST['myData']);
 

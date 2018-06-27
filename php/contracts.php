@@ -37,13 +37,15 @@
     <!-- Este folosit in mare parte css-ul de la home, dar vreau sa dau overwrite la cateva deci pun unul separat dupa -->
     <link rel="stylesheet" href="../css/contracts-expansion.css">
     <!-- Devextreme --> 
-    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/17.2.7/css/dx.common.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/17.2.7/css/dx.light.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.common.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/18.1.3/css/dx.light.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.js"></script>
-    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/17.2.7/js/dx.all.js"></script>
-
+    <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.js"></script>
     <!-- Ready function -->
     <script src="../js/scripts/contracts.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Notify.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/notify.min.js"></script>
     <title>Contracts</title>
 </head>
 <body>
@@ -75,7 +77,6 @@
                         </ul>    
                     </div>
                 </div> <!-- end div display-user -->
-                
             </div> <!-- end div d-flex -->
         </div> <!-- end div topnav -->
 
@@ -105,7 +106,10 @@
                 <br>
                 <button id="clear-datagrid-filters" type="button">Clear filters</button>
             </div>
-            <div class="col-2">
+            <div class="col-3">
+                <button id="reset-workspace" type="button" >Reset workspace</button>
+                <input id="save-workspace-checkbox" type="checkbox" checked>
+                <label for="save-workspace-checkbox">Continue where I left off</label>
             </div>
         </div> <!--  end custom header  -->
         <div id='dataGrid'></div>
@@ -115,7 +119,10 @@
 
 <script>
     // Aici salvez in variabila useridfromsession id-ul utilizatorului ca sa nu dau ajax mai tarziu, ca sa il trimit cand dau delete prin ajax sa stim cine a facut modificarea
-    var userID_fromSession = <?php echo $_SESSION['userID']; ?>;
+    var userID_fromSession = "<?php echo $_SESSION['userID']; ?>";
+    // Daca vrea sau nu sa ii apara vechiul workspace
+    var continueWhereILeft = "<?php echo $_SESSION['saveWorkspaceOnExit'] ?>";
+    console.log("continue din sesiune", continueWhereILeft);
 </script>
 </html>
 

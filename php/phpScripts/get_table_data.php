@@ -1,5 +1,6 @@
 <?php
     include("../db_config.php");
+    ini_set('memory_limit', '512M');
 
     $conn = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
     if ($conn->connect_error) 
