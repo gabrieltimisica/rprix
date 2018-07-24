@@ -1,20 +1,43 @@
 TO DO :
 	<Priotate MARE ===================>
-		Privilegii
-		Sa poata adauga contractul si alte fisiere in format pdf
-		Sa preluam datele pentru dropdown pentru contracttype, astea mici
-		Sa poata adauga din interfata o organizatie, un client, contract type
-		Sa schimbam din BD sa nu mai trimitem toate contractele ca facem flooding
-		Sa punem buton de afisare contract in datagrid
-		Buton de multiple add
+	Sa punem buton de afisare contract in datagrid
+	sa punem logourile prin pagina
+	Trecerea in mssql
+		
+	<Prioritate MICA ===================>
+
 		Nu merge scrollul la organizatii la dropdown din mousewheel
-		Sa nu se inchida popup ul daca add row
-		Adaugat pentru fiecare status cate o culoare pe datagrid
+		Sa iesi din add edit folosind esc + intrebare (intrebare doar daca sunt modificari si nu sunt salvate)
+		Sa mutam punctele de suspensie din dreapta la add edit in stanga
+		Sa punem stelute de obligatorii la unele campuri din edit
+		optional -- Sa poata adauga din interfata o organizatie, un client, contract type
 		
 
-	<Prioritate MICA ===================>
-		Buton care apare in interfata de add se numeste Save. Trebuie schimbat in add
-		Sa iesi din add edit folosind esc + intrebare (intrebare doar daca sunt modificari si nu sunt salvate)
-		Reset to default la interfata
-		Sa mutam punctele de suspensie din dreapta la add edit in stanga
-		
+
+
+
+DONE:
+Alert de nu poti edita
+numele ca lumea in topbar
+sa schimbi la dropdownuri in loc de nume sa folosesti id uri
+buton de deleted
+Conflictele de edit
+Sa dau refresh la grid dupa deleted, ca sa nu dispara din grid
+sa afisez in dropdownuri si alte detalii cum ar fi codul fiscal plm.....
+Privilegii
+sa rezolv bugul la cookie uri
+Am adaugat dropdown functional pentru responsabili
+Luam contractele din BD prin ID
+Am aranjat interfata 
+Sa nu se inchida popup ul daca add row
+Contract id sa fie hidden
+Event la close din edit si add
+Buton care apare in interfata de add se numeste Save. Trebuie schimbat in add
+Default value pentru contract type is status
+Folosim acum iduri pentru contract type si status
+Sa preluam datele pentru dropdown pentru contracttype, astea mici
+Reset to default la interfata
+Default value sa fie Romprix la organizatii
+Buton de clear value la dropdownurile din add si edit
+Buton de multiadd
+

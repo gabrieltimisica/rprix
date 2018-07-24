@@ -9,37 +9,19 @@
 var arrayOfValuesToBeFilteredFromHeaderCheckboxes = [];
 
 $(function() {
-    get_table_data();
+    // luam privilegiile utilizatorului
+    get_user_privileges(userID_fromSession);
+    // Luam informatia pentru lookup-uri: contract type, status, responsables din edit/add
+    getDataForDropdowns();
+    setTimeout(() => {
+        get_table_data();
+    }, 100);
 
-    // setam checkboxul in functie de cum era setat inainte
-    // variabila continuewhereileft este primita din sesiune
-    // var dataGrid = $("#dataGrid").dxDataGrid('instance');
-    // if (continueWhereILeft == 1) {
-    //     $("#save-workspace-checkbox").prop('checked', true);
-    //     dataGrid.option("stateStoring.enabled", true);
-    // } else {
-    //     $("#save-workspace-checkbox").prop('checked', false);
-    //     dataGrid.option("stateStoring.enabled", false);
-    // }
-    // vedem daca el vrea sau nu sa i se salveze workspace ul
-
-    $("button #reset-workspace").click(function () {
+    $("#reset-workspace").click(function () {
         sessionStorage.clear();
         var dataGrid = $("#dataGrid").dxDataGrid('instance');
-        dataGrid.option("stateStoring.enabled", false);
-    });
-    $("#save-workspace-checkbox").click(function () {
-        var dataGrid = $("#dataGrid").dxDataGrid('instance');
-        // Acum s-a apasat butonul de checked
-        if ($(this).is(':checked')) {
-            dataGrid.option("stateStoring.enabled", true);
-            changeSessionVar('saveWorkspaceOnExit', 1);
-        } else { 
-            // acum s-a debifat
-            dataGrid.option("stateStoring.enabled", false);
-            changeSessionVar('saveWorkspaceOnExit', 0);
-        }
-
+        dataGrid.state({});
+        dataGrid.refresh();
     });
 
     // Logout button
@@ -85,6 +67,7 @@ $(function() {
     // i = 2 Status active
     // i = 3 closed
     // i = 4 preliminary
+    // i = 5 deleted
     $("#filter-by-status-active").click(function () 
     {
         // Acum s-a apasat butonul de checked
@@ -150,7 +133,22 @@ $(function() {
             }
         applyFiltersToDatagrid('ContractStatusID');
     });
-
+    $("#filter-by-status-deleted").click(function () {
+        // Acum s-a apasat butonul de checked
+        if ($("#filter-by-status-deleted").is(':checked'))
+            {
+                arrayOfValuesToBeFilteredFromHeaderCheckboxes[5] = 1;
+                $(".checkbox-deleted").css("font-weight","Bold");
+            }
+        else 
+            // acum s-a debifat
+            // Pozitia reprezinta statusul iar valoarea 1 / 0 daca e activ filtrul sau nu
+            {
+                arrayOfValuesToBeFilteredFromHeaderCheckboxes[5] = 0;
+                $(".checkbox-deleted").css("font-weight","Normal");
+            }
+        applyFiltersToDatagrid('ContractStatusID');
+    });
 
 }); // END READY FUNCTION
 
@@ -182,40 +180,33 @@ function applyFiltersToDatagrid(columnNameFromDB)
 
 // Variabilele astea sunt vectori de obiecte
 // In ele stochez optiunile din care se poate alege in dropdown uri cand apas pe edit / add
-var statusTable, organizationTable, clientsTable, contractTypeTable;
-
-statustable = [{
-    "key": 1,
-    "StatusID": 2,
-    "Name": "Active"
-}, {
-    "StatusID": 1,
-    "Name": "Canceled"
-}, {
-    "StatusID": 3,
-    "Name": "Closed"
-}, {
-    "StatusID": 4,
-    "Name": "Preliminary"
-}];
+var statusTable, organizationTable, clientsTable, contractTypeTable, agentTable;
+// editContractID e id ul contractului la care dau cancel, e global ca nu il am din e.data.id in eventul de close popup
+var weCanEdit = 0, editContractID;
+// id-urile contractelor si organizatiilor pe care le trimit in BD la add edit
+var orgID = '', clientID = '';
 
 // Aici este apelat devextreme si creeaza tabelul
 function draw_table(table_data) 
 {
     $("#dataGrid").dxDataGrid({
         dataSource: table_data,
+        rowAlternationEnabled: true,
+        hoverStateEnabled: true,
         columns: [
             {
                 caption:'Row Number',
-                cellTemplate: function(cellElement, cellInfo)
-                {
+                cellTemplate: function(cellElement, cellInfo) {
                     cellElement.text(cellInfo.row.rowIndex + 1) // + 1 ca sa inceapa de la 1 ordinea
-                }
+                },
+                alignment: 'center',
             },{
                 caption:'Contract ID',
                 dataField:'ContractID',
                 alignment: 'left',
-                allowGrouping: true
+                allowGrouping: true,
+                alignment: 'center',
+                visible: false
             },{
             //     caption:'Organization',
             //     dataField:'OrganizationName',
@@ -253,32 +244,32 @@ function draw_table(table_data)
             //                         else $("#orgSelectBox").dxSelectBox('instance').close();
             //                     },
             //                 }).attr("id", "orgTextBoxFromSelectBox");
-            //                 var $customButton = $("<div>").dxButton({
-            //                     // text: "Custom",
-            //                     icon: "search",
-            //                     onClick: function (args) {
-            //                         console.log("buton apsat");
-            //                         // nu stiu ce face e.prevent si stop
-            //                         var e = args.event; 
-            //                         e.preventDefault();
-            //                         e.stopPropagation();
-            //                         var textBoxInstance = $input.dxTextBox('instance');
-            //                         var selectBoxInstance = $(div).dxSelectBox('instance');
-            //                         // selectBoxInstance.close();
-            //                         // console.log("valuee=", textBoxInstance.option('text'));
-            //                         getDBDataBasedOnValue(
-            //                             textBoxInstance,
-            //                             selectBoxInstance,
-            //                             "asdf",
-            //                             "OrganizationName"
-            //                         );
-            //                     }
-            //                 }).attr("id", "orgSearchButton")
-            //                 .css({
-            //                     position: "absolute",
-            //                     right: "0",
-            //                     top: "0"
-            //                 }); // end customButton
+                    //                 var $customButton = $("<div>").dxButton({
+                    //                     // text: "Custom",
+                    //                     icon: "search",
+                    //                     onClick: function (args) {
+                    //                         console.log("buton apsat");
+                    //                         // nu stiu ce face e.prevent si stop
+                    //                         var e = args.event; 
+                    //                         e.preventDefault();
+                    //                         e.stopPropagation();
+                    //                         var textBoxInstance = $input.dxTextBox('instance');
+                    //                         var selectBoxInstance = $(div).dxSelectBox('instance');
+                    //                         // selectBoxInstance.close();
+                    //                         // console.log("valuee=", textBoxInstance.option('text'));
+                    //                         getDBDataBasedOnValue(
+                    //                             textBoxInstance,
+                    //                             selectBoxInstance,
+                    //                             "asdf",
+                    //                             "OrganizationName"
+                    //                         );
+                    //                     }
+                    //                 }).attr("id", "orgSearchButton")
+                    //                 .css({
+                    //                     position: "absolute",
+                    //                     right: "0",
+                    //                     top: "0"
+                    //                 }); // end customButton
             //                 $container.append($input).append($customButton);
             //                 return $container;
             //             }, // end fieldTemplate
@@ -314,15 +305,33 @@ function draw_table(table_data)
             //     } // end editCellTemplate
             // },
             // ,{
-                // TEST
                 caption:'Organization',
                 dataField:'OrganizationName',
                 alignment: 'center',
                 allowGrouping: true,
                 editCellTemplate: function (cellElement, cellInfo) {
-                    // Sa nu apese save cu o valoare scrisa care nu este selectata din dropdown
-                    // Cand apasa pe un element din lista, acesta devine 0. Cand scrie ceva devine 1;
-                    window.organizationValueInvalid = 0; 
+                    // vedem valoarea initiala la isInvalid in functie de edit sau add
+                    var notOnEditForm;
+                    // verificam daca suntem pe edit sau nu
+                    if ($(".input-organization").val() != '')
+                        notOnEditForm = 0;
+                    else notOnEditForm = 1;
+
+                    window.organizationName = {
+                        isInvalid: notOnEditForm,
+                        aListener: function(val) {},
+                        get a() {
+                            return this.isInvalid;
+                        },
+                        set a(x) {
+                            this.isInvalid = x;
+                            this.aListener(x);
+                        },
+                        registerListener: function(listener) {
+                            this.aListener = listener;
+                        }
+                    };
+
                     // console.log("cellelem:",cellElement,"cellinfo", cellInfo);
                     var div = document.createElement("div");
                     cellElement.get(0).appendChild(div);    
@@ -330,20 +339,27 @@ function draw_table(table_data)
                     // Daca da search fara nimic scris o sa caute in BD cu undefined
                     // Daca e '' trebuie sa facem valueInvalid = 1 oricum
                     if (cellInfo.value == undefined || cellInfo.value == '') {
-                        cellInfo.setValue('');
-                        clientValueInvalid = 1;
-                    }                       
+                        // Asta e varianta generalizata, dar ca sa avem flexibilitate, 
+                        // punem direct organizatia romprix ca default pt ca o sa fie mereu folosita
+                        // cellInfo.setValue('');      NU STERGE
+                        // organizationName.a = 1;      NU STERGE
+                        cellInfo.setValue('ROMPRIX EXIM SRL');
+                        organizationName.a = 0;
+                        orgID = 1; // id-ul organizatiei romprix
+                    }
 
                     $(div)
                         .addClass("organization-div pos-relative")
                         // chestia aia cu interogarea este daca cumva apesi pe add contract si cellinfo e undefined. Atunci tu vrei sa apara spatiu, nu undefined
                         .append("<input class='input-organization input-edit-form' value='" + cellInfo.value + "' autocomplete='off' spellcheck='false' type='text'></input>")
-                        .append("<button class='search-btt btn'><span class='fa fa-search'></span></button>");
+                        .append("<button class='search-btt btn'><span class='fa fa-search'></span></button>")
+                        .append("<i class='clear-text-icon fas fa-times-circle'></i>");
 
                     // se schimba valoarea inputului in timp ce scriem
                     $(".input-organization").on("change paste keyup", function() {
                         cellInfo.setValue($(this).val());
-                        organizationValueInvalid = 1; // nu e valida, trebuie selectat din BD
+                        organizationName.a = 1; // nu e valida, trebuie selectat din BD
+                        orgID = '';
                     });
                     
                     // butonul de search
@@ -356,40 +372,58 @@ function draw_table(table_data)
                             );
                         });
 
+                    $(".organization-div .clear-text-icon").click(() => {
+                        cellInfo.setValue('');
+                        $(".input-organization").val("");
+                        organizationName.a = 1;
+                        orgID = '';
+                    });
+
                     // Eventul pentru ceva ce nu exista inca se face cu document
                     // Event pentru cand apsam pe elementele din lista si vrem sa schimbam valoarea
                     $(document).on('click', '.organization-li', function() {
-                        var newValue = $(this).text(); // textul de pe linia din lista
+                        var newValue = $(this).children(".value").text(); // textul de pe linia din lista
                         cellInfo.setValue(newValue);
                         $(".input-organization").val(newValue);
-                        organizationValueInvalid = 0;
+                        organizationName.a = 0;
+                        orgID = $(this).children(".id").text();
                     });
-
 
                     // Trebuie sa stergem lista daca apasam pe containerul de edit sau selectam ceva din lista
+                    // Functioneaza si pentr dropdownul de clienti
                     $(".dx-overlay-content").click(() => {
-                            $("ul.dropdown-input").remove();                    
+                        $("table.dropdown-input").remove();   
+                        $("div.table-header").remove();
                     });
-
-                    // $(document).on('click', ".dx-popup-normal div.dx-button[aria-label='Save']", function(e) {
-                    //     if (organizationValueInvalid || clientValueInvalid) {
-                    //         $(this).css({"pointer-events": "none"});
-                    //         // e.stopPropagation();
-                    //         console.log("save apasat");
-                    //     }     
-                    // });
-
                 } // end edit celltemplate
             },
             {
                 caption:'Client',
                 dataField:'ClientName',
-                alignment: 'center',
+                alignment: 'left',
                 allowGrouping: true,
                 editCellTemplate: function (cellElement, cellInfo) {
-                    // Sa nu apese save cu o valoare scrisa care nu este selectata din dropdown
-                    // Cand apasa pe un element din lista, acesta devine 0. Cand scrie ceva devine 1;
-                    window.clientValueInvalid = 0; 
+                    // vedem valoarea initiala la isInvalid in functie de edit sau add
+                    var notOnEditForm;
+                    // verificam daca suntem pe edit sau nu
+                    if ($(".input-client").val() != '')
+                        notOnEditForm = 0;
+                    else notOnEditForm = 1;
+
+                    window.clientName = {
+                        isInvalid: notOnEditForm,
+                        aListener: function(val) {},
+                        get a() {
+                            return this.isInvalid;
+                        },
+                        set a(x) {
+                            this.isInvalid = x;
+                            this.aListener(x);
+                        },
+                        registerListener: function(listener) {
+                            this.aListener = listener;
+                        }
+                    };
 
                     // console.log("cellelem:",cellElement,"cellinfo", cellInfo);
                     var div = document.createElement("div");
@@ -398,24 +432,30 @@ function draw_table(table_data)
                     // Daca da search fara nimic scris o sa caute in BD cu undefined
                     if (cellInfo.value == undefined || cellInfo.value == '') {
                         cellInfo.setValue('');
-                        clientValueInvalid = 1;
-                        console.log("valueinvalid ", clientValueInvalid);
+                        clientName.a = 1;
+                        clientID = '';
                     }
-                        
 
                     $(div)
                         .addClass("client-div pos-relative")
-                        // chestia aia cu interogarea este daca cumva apesi pe add contract si cellinfo e undefined. Atunci tu vrei sa apara spatiu, nu undefined
                         .append("<input class='input-client input-edit-form' value='" + cellInfo.value + "' autocomplete='off' spellcheck='false' type='text'></input>")
-                        .append("<button class='search-btt btn'><span class='fa fa-search'></span></button>");
+                        .append("<button class='search-btt btn'><span class='fa fa-search'></span></button>")
+                        .append("<i class='clear-text-icon fas fa-times-circle'></i>");
 
                     // se schimba valoarea inputului in timp ce scriem
                     $(".input-client").on("change paste keyup", function() {
                         cellInfo.setValue($(this).val());
-                        clientValueInvalid = 1; // nu e valida, trebuie selectat din BD
+                        clientName.a = 1; // nu e valida, trebuie selectat din BD
+                        clientID = '';
+                    });
+
+                    $(".client-div .clear-text-icon").click(function() {
+                        $(".input-client").val("");
+                        cellInfo.setValue('');
+                        clientName.a = 1;
+                        clientID = '';
                     });
                     
-                    // butonul de search
                     $(".client-div button.search-btt")
                         .on("click", () => {
                             getDBDataBasedOnValue(
@@ -425,57 +465,59 @@ function draw_table(table_data)
                             );
                         });
 
-                    // Eventul pentru ceva ce nu exista inca se face cu document
                     // Event pentru cand apsam pe elementele din lista si vrem sa schimbam valoarea
                     $(document).on('click', '.client-li', function() {
-                        var newValue = $(this).text(); // textul de pe linia din lista
+                        var newValue = $(this).children(".value").text(); // textul de pe linia din lista
                         cellInfo.setValue(newValue);
                         $(".input-client").val(newValue);
-                        clientValueInvalid = 0;
-                        console.log("valueinvalid ", clientValueInvalid);
+                        clientName.a = 0;
+                        clientID = $(this).children(".id").text();
                     });
-
-                    // Trebuie sa stergem lista daca apasam pe containerul de edit sau selectam ceva din lista
-                    // $(".dx-overlay-content").click(() => {
-                    //         $("ul.dropdown-input").remove();                    
-                    // });
                 } // end edit celltemplate
             },
             {
-                
                 caption:'Contract Name',
                 dataField:'ContractName',
-                allowGrouping: true
+                allowGrouping: true,
+                alignment: 'left',
             },
             {
                 caption:'Contract Type',
-                dataField:'ContractType',
+                dataField:'ContractTypeID',
                 alignment: 'center',
-                allowGrouping: true
+                allowGrouping: true,
+                lookup: {
+                    dataSource: contractTypeTable,
+                    displayExpr: "Value",
+                    valueExpr: "RowID"
+                },
             },
             {
-                // Apare in tabel, nu apare la add / edit
                 caption:'Status',
                 dataField:'ContractStatusID',
                 alignment: 'center',
-                // cellTemplate: function (container, options) {
-                //     var div = document.createElement("div");
-                //     $(div).appendTo(container);
-                // },
-                
-                // allow filtering si headerfiltering sunt puse asa ca sa dispara de la status filtrarea din cell-ul de jos
                 allowFiltering: false,
                 allowHeaderFiltering: true,
                 allowGrouping: true,
-                options:{
- 
-                },
                 lookup: {
-                    dataSource: statustable,
-                    displayExpr: "Name",
-                    valueExpr: "StatusID"
+                    dataSource: statusTable,
+                    displayExpr: "Value",
+                    valueExpr: "RowID"
                 },
-               
+            },
+            {
+                caption:'Responsable',
+                dataField:'ResponsableID',
+                alignment: 'center',
+                allowFiltering: false,
+                allowHeaderFiltering: true,
+                allowGrouping: true,
+                lookup: {
+                    dataSource: agentTable,
+                    displayExpr: "Value",
+                    valueExpr: "RowID"
+                },
+                visible: false
             },
             {
                 caption:'Contract Number IN',
@@ -524,17 +566,15 @@ function draw_table(table_data)
             allowDeleting:true,
             allowUpdating:true,
             useIcons: true,
-            
             form: {
                 colCount: 2,
                 items: [{
                     itemType: "group",
                     items: [{ 
-                        dataField: "ContractType" 
+                        dataField: "ContractTypeID" 
                     }]
                 },
                 {
-                    // Asta e pus aici ca sa ocupe loc, sa ocupe jumatate de coloana
                     itemType: "group",
                     items: [{
                         caption: "spatiugol2"
@@ -599,10 +639,13 @@ function draw_table(table_data)
                     }]
                 },
                 {
-                    // Asta e pus aici ca sa ocupe loc, sa faca short descriptionul pe tot randul
                     itemType: "group",
-                    items: [{
-                        caption: "spatiugol"
+                    colSpan: 1,
+                    items: [{ 
+                        dataField: "ResponsableID",
+                        editorOptions: {
+                            width: 197
+                        },
                     }]
                 },
                 {
@@ -618,15 +661,174 @@ function draw_table(table_data)
                     }]
                 },
                 {
+                    // checkboxul de multiadd
+                    itemType: "group",
+                    colSpan: 2,
+                    template: function(data, itemElement) {
+                        setTimeout(() => {
+                            // vedem valoarea initiala la isInvalid in functie de edit sau add
+                            var notOnEditForm2;
+                            // verificam daca suntem pe edit sau nu
+                            if ($("input[id$='ContractName']").val() != '')
+                                notOnEditForm2 = 0;
+                            else notOnEditForm2 = 1;
+
+                            window.contractName = {
+                                isInvalid: notOnEditForm2,
+                                aListener: function(val) {},
+                                get a() {
+                                    return this.isInvalid;
+                                },
+                                set a(x) {
+                                    this.isInvalid = x;
+                                    this.aListener(x);
+                                },
+                                registerListener: function(listener) {
+                                    this.aListener = listener;
+                                }
+                            };
+
+                            $(document).on("change paste keyup", "input[id$='ContractName']", function() {
+                                if ($(this).val() != '') {
+                                    // e bun
+                                    contractName.a = 0; 
+                                } else {
+                                    contractName.a = 1;
+                                }
+                            });
+
+                            // vedem valoarea initiala la isInvalid in functie de edit sau add
+                            var notOnEditForm1;
+                            // verificam daca suntem pe edit sau nu
+                            if ($("input[id$='ContractNumberIn']").val() != '' && $("input[id$='ContractNumberIn']").val() != undefined) {
+                                notOnEditForm1 = 0;
+                            } else {
+                                notOnEditForm1 = 1;
+                            }
+
+                            window.contractNumberIn = {
+                                isInvalid: notOnEditForm1,
+                                aListener: function(val) {},
+                                get a() {
+                                    return this.isInvalid;
+                                },
+                                set a(x) {
+                                    this.isInvalid = x;
+                                    this.aListener(x);
+                                },
+                                registerListener: function(listener) {
+                                    this.aListener = listener;
+                                }
+                            };
+                        
+                            $(document).on("change paste keyup", "input[id$='ContractNumberIn']", function() {
+                                if ($(this).val() != '' && $(this).val() != undefined) {
+                                    // e bun
+                                    contractNumberIn.a = 0; 
+                                } else {
+                                    contractNumberIn.a = 1;
+                                } 
+                            });
+                        
+                            // Bagam wrap la inputul contractName ca sa punem afisa notify, altfel nu merge
+                            $("input[id$='ContractName'] + div").wrapAll("<div class='contract-name-notifier'> </div>");
+
+                            function verifyInputs(val) {
+                                // console.log("se verifica inputurile");
+                                // Daca totul e ok il lasam sa apese
+                                if (contractName.a == 0 && 
+                                    clientName.a == 0 &&
+                                    contractNumberIn.a == 0 &&
+                                    organizationName.a == 0 && 
+                                    $("input[id$='ContractBeginDate']").parent().siblings("input[type='hidden']").val() != ''
+                                ) {
+                                    $("div.add-contract-container").removeClass("add-contract-btn-notifier");
+                                    $("div.add-contract-container > div").removeClass("pointer-e-none");
+                                    $("div.edit-contract-container").removeClass("edit-contract-btn-notifier");
+                                    $("div.edit-contract-container > div").removeClass("pointer-e-none");
+                                } else {
+                                    // blocam butonul de add contract
+                                    $("div.edit-contract-container").addClass("edit-contract-btn-notifier");
+                                    $("div.edit-contract-container > div").addClass("pointer-e-none"); 
+                                    $("div.add-contract-container").addClass("add-contract-btn-notifier");
+                                    $("div.add-contract-container > div").addClass("pointer-e-none"); 
+                                }
+                            }
+
+                            // pentru ca nu am putut face event pentru valoarea din inputul de date
+                            // jeg de bug sau ce o fi, e imposibil
+                            // verificam la fiecare 2 sec in ce stare se afla inputul.... asta e
+                            // functia asta e facuta doar pentru begindate, restul functioneaza sif ara ea
+                            // stopdatetime e ca sa opresc rularea functiei daca termin cu popupul
+                            // chestia asta cu stopdatetime merge
+                            // ideea e ca degeaba ii dau valoarea 1 ca ajunge iar aici si recontinua
+                            // deci ii dau valoarea 1 daca fac addRow, mai ajunge odata FARA SA VREAU
+                            // si cand ajunge devine 2, aici se opreste pentru ca asa trebuie
+                            // si dacaapas din nou pe addrow, din 2 devine 0 si incepe de la capat
+                            // cu alte cuvinte imi intra odata fara sa vreau si asa scap de posibilitatea aia
+                            // console.log("datetimeout =", stopDateTimeTimeout);
+                            if (typeof stopDateTimeTimeout == 'undefined')
+                                window.stopDateTimeTimeout = 0;
+                            else if (stopDateTimeTimeout == 1)
+                                stopDateTimeTimeout = 2; 
+                            else if (stopDateTimeTimeout == 2)
+                                stopDateTimeTimeout = 0;
+                                // am folosit timeout ca cica e mai bine decat settimer
+                            function repeatTheExecution(){
+                                // console.log(stopDateTimeTimeout);
+                                if (stopDateTimeTimeout == 0) {
+                                    // console.log("contractNumberIn",contractNumberIn.a, "contractName", contractName.a, "clientName", clientName.a, "organizationName", organizationName.a, "begindate",      $("input[id$='ContractBeginDate']").parent().siblings("input[type='hidden']").val());
+
+                                    verifyInputs();
+                                    setTimeout(repeatTheExecution, 500);
+                                }
+                            }
+                            repeatTheExecution();
+
+                            // Daca valoarea din input se schimba din invalid in valid
+                            // sau invers, verificam daca punem debloca 'add contract'
+                            contractNumberIn.registerListener(function (val) {
+                                verifyInputs(val);
+                            });
+                            organizationName.registerListener(function (val) {
+                                verifyInputs(val);
+                            });
+                            clientName.registerListener(function (val) {
+                                verifyInputs(val);
+                            });
+                            contractName.registerListener(function (val) {
+                                verifyInputs(val);
+                            });
+
+                            // 2 eventuri pentru butoanele de close si X
+                            // merg pe edit si pe add
+                            $(document).on("click", "div[aria-label='Cancel'] span:contains('Cancel'), div[aria-label='close'] i.dx-icon-close", function() {
+                                stopDateTimeTimeout = 2;
+                                organizationName = undefined;
+                                contractNumberIn = undefined;
+                                clientName = undefined;
+                                contractName = undefined;
+                                delete(contractName);
+                                delete(contractNumberIn);
+                                delete(organizationName);
+                                delete(clientName);
+                                // wecanedit la contracte ... cazul in care dam close la popup, trebuie pusa valoarea pe 0
+                                window.weCanEdit = 0;
+                                verifyEditStatus(userID_fromSession, editContractID, 3, null);
+                                clientID = '';
+                                orgID = '';
+                            });
+                        }); // end settimeout
+                    } // end template: function(data, itemElement)
+                } , {
                     itemType: "group",
                     colSpan: 1,
-                    template: function(data, itemElement) 
-                    {
-                    var div = document.createElement("div");
-                    itemElement.get(0).appendChild(div);
-                    $(div).append("<button id = \"upload-button\" class = \"button\">Add contract file<img src=\"../img/contract-icon.png\" class=\"img-fluid contract-image\"></button>");
-                    $( "#upload-button" ).click(function() {
-                        alertify.confirm().set({
+                    template: function(data, itemElement) {
+                      var div = document.createElement("div");
+                      itemElement.get(0).appendChild(div);
+                      $(div).append("<button id = \"upload-button\" class = \"button\">Add contract file<img src=\"../img/contract-icon.png\" class=\"img-fluid contract-image\"></button>");
+                      $( "#upload-button" ).click(function() {
+                          alertify.confirm().set({
                                               'maximizable': true,
                                             //   'basic':true,
                                               'title':'Upload contract',
@@ -681,12 +883,9 @@ function draw_table(table_data)
                                         });
                         
 
-                    });
+                      });
                     }// end template: function(data, itemElement)
-                    
-
-                },
-                {
+                }, {
                     itemType: "group",
                     colSpan: 1,
                     template: function(data, itemElement) 
@@ -720,19 +919,16 @@ function draw_table(table_data)
 
                         
 
-                    });
-                    },//
-
+                      }); // end alertify
+                    }, // end upload
                 },
-
-                  
-                
             ]}, // end form si ] se inchide items
             popup: {
+                // animation: false,
                 title: "Add contract",
                 showTitle: true,
                 width: 800,
-                height: 650,
+                height: 800,
                 position: {
                     my: "center",
                     at: "center",
@@ -740,8 +936,8 @@ function draw_table(table_data)
                 }               
             },
             texts: {
-                deleteRow: 'Cancel', // textul delete e inlocuit cu cancel
-                addRow: "Add contract"// 
+                deleteRow: 'Cancel', 
+                addRow: "Add contract",
             }
         },
         columnChooser: {
@@ -755,11 +951,11 @@ function draw_table(table_data)
         columnAutoWidth: true,
         allowColumnResizing: true,
         allowColumnReordering: true,
-        columnHidingEnabled: true, // la asta sa mai cauti, se poate sa fie overwrited de autowidth 
-        filterRow: { // Filtrare dupa valoare pe fiecare coloana
+        columnHidingEnabled: true,
+        filterRow: {
             visible: true
         },
-        headerFilter: { // apare acel icon in care poate filtra cu clickuri dupa valori
+        headerFilter: {
             allowSearch: true,
             visible: true,
             height: 400
@@ -794,180 +990,326 @@ function draw_table(table_data)
             visible: true
         },
         stateStoring: {
-            enabled: false,
+            enabled: true,
             type: 'SessionStorage',
             ignoreColumnOptionNames: []
         },
         onRowPrepared: function (info) {
-            if (info.rowType == 'data')
-                    {
-                    if (info.data.ContractStatusID== 1)
-                        info.rowElement.css("background-color", "#ffa8a8");// daca contractul are status de canceled randul cu contractul respectiv este coloroat cu #ffa8a8
-                    }
-            //     info.rowElement.css('background', 'red');
-     },
-    // onCellPrepared: function(e) {
-    //     // console.log("plm",e);
-    //    console.log( e.cell.text);
-    // },
-        onRowInserted: function(e) {
-            console.log(e);
-            if (!organizationValueInvalid && !clientValueInvalid) {
-                console.log("intra la add",organizationValueInvalid, clientValueInvalid);
-                var jsonToSend = {
-                    "data": e.data, // informatia despre contract adaugata
-                    "userID": userID_fromSession,
-                    "action": "addContract"
-                };
-                // Adaugam in BD
-                contracts_action_editAddDelete(jsonToSend);
-                // updatam tabelul, ca sa ia si  contractID din BD, pentru ca se creeaza cand ajunge in bd, nu are de unde sa o ia, deci luam toata informatia din nou
+            console.log(info);
+            if (info.rowType == 'data' )
+            for (var key in info.cells)
+            {
+                if (info.cells[key].column['dataField'] == 'ContractStatusID')
+                // coloram liniile in functie de status
+                // switch (info.data.ContractStatusID) {
+                //     case 1: 
+                //         // canceled
+                //         info.rowElement.css("background-color", "#AF7B98"); 
+                //         break;
+                //     case 2:
+                //         // active
+                //         info.rowElement.css("background-color", "#B1EDE8"); 
+                //         break;
+                //     case 3:
+                //         // closed
+                //         info.rowElement.css("background-color", "#FF99A3"); 
+                //         break;
+                //     case 4:
+                //         // preliminary
+                //         info.rowElement.css("background-color", "#EFCFAE"); 
+                //         break; 
+                //     case 5:
+                //         // deleted
+                //         info.rowElement.css("background-color", "#8B7696"); 
+                //         break; 
+                // } 
+                switch (info.data.ContractStatusID) {
+                    case 1: 
+                        // canceled
+                        info.cells[key].cellElement[0].bgColor = "#AF7B98"; 
+                        break;
+                    case 2:
+                        // active
+                        info.cells[key].cellElement[0].bgColor = "#B1EDE8"; 
+                        break;
+                    case 3:
+                        // closed
+                        info.cells[key].cellElement[0].bgColor = "#FF99A3"; 
+                        break;
+                    case 4:
+                        // preliminary
+                        info.cells[key].cellElement[0].bgColor = "#EFCFAE"; 
+                        break; 
+                    case 5:
+                        // deleted
+                        info.cells[key].cellElement[0].bgColor = "#8B7696"; 
+                        break; 
+                } 
+            }
+        },
+        onContentReady: function (e) {
+            // verificam privilegiile si scoatem optiunea de add
+            if (!contractAddPrivilege) {
+                $("span.dx-button-text:contains('Add contract')")
+                    .closest("div[aria-label='Add contract']")
+                    .css({"background-color": "#ccc9c9", "cursor": "context-menu", "pointer-events": "none"});
+                $("i.dx-icon.dx-icon-edit-button-addrow").css("color", "#aaa9a9");
+            }                                        
+        },
+        onRowRemoving: function(e) {
+        },
+        onRowInserted: function(e) { 
+            // opresc timerul pentru timeoutul de la begindate doamne fereste
+            stopDateTimeTimeout = 1;        
+
+            var jsonToSend = {
+                "data": e.data, // informatia despre contract adaugata
+                "userID": userID_fromSession,
+                "action": "addContract"
+            };
+
+            // daca variabila globala orgid sau clientid e setat
+            // atunci am selectat un id nou din dropdownuri, altfel il folosim pe cel vechi
+            if (orgID != '') {
+                jsonToSend.data.OrganizationID = orgID;
+            }
+            if (clientID != '') {
+                jsonToSend.data.ContractClientID = clientID;
+            }
+
+            contracts_action_editAddDelete(jsonToSend);
+            
+            // update la tabel ca sa se genereze in BD contract ID
+            setTimeout(() => {
                 get_table_data();
-                // Stergem variabilele
-                organizationValueInvalid = undefined;
-                clientValueInvalid = undefined;
-                delete(organizationValueInvalid);
-                delete(clientValueInvalid);
-            } else {
-                // avem inputuri invalide, nu putem adauga
-                if (e.key.OrganizationName == '') // da add si e gol campul
-                    $(".organization-div .input-organization").notify(
-                        "Don't leave me empty !",
-                        { position:"bottom" }
-                    );
-                else if (organizationValueInvalid)
-                    $(".organization-div .input-organization").notify(
-                        "'" + e.key.OrganizationName + "' is not selected from the dropdown !", 
-                        // "'" + e.key.OrganizationName + "' might not be a valid organization !", 
-                        // "Select the organization from the dropdown !", 
-                            { position:"bottom" }
-                    );
-
-                if (e.key.ClientName == '') // da save si e gol campul
-                    $(".client-div .input-client").notify(
-                        "Don't leave me empty !",
-                        { position:"bottom" }
-                    );
-                else if (clientValueInvalid)
-                    $(".client-div .input-client").notify(
-                        "'" + e.key.ClientName + "' is not selected from the dropdown !", 
-                        // "'" + e.key.ClientName + "' might not be a valid client !", 
-                        // "Select the client from the dropdown !", 
-                            { position:"bottom" }
-                    );
-
-                // $("div.dx-button[aria-label='Save']").click((event) => {
-                //     console.log("se intamplaaaaa");
-                //     // event.stopPropagation();
-                // });
-
-            } // end if
+            },100); 
         },
         onRowUpdating: function(e) {
-            console.log(e);
-            // e.oldData contine ce era inainte, in console log apar updatate, e bug
-            // e.newData contine doar field urile schimbate
+            stopDateTimeTimeout = 1;
+            // console.log("onrowupdating", e);
 
-            // Nu lasam sa dea save daca nu a selectat o valoare din dropdown
-            if (!organizationValueInvalid && !clientValueInvalid) {
-                var jsonToSend = {
-                    "data": e.oldData, 
-                    "userID": userID_fromSession,
-                    "action": "editContract"
-                };
-                // luam toate valorile schimbate din newData 
-                // si le punem peste valorile vechi
-                for (var key in e.newData) 
-                    if (e.newData.hasOwnProperty(key)) {
-                        jsonToSend.data[key] = e.newData[key];
-                    }
-    
-                console.log("jsontosend",jsonToSend);
-                contracts_action_editAddDelete(jsonToSend);
-                // Stergem variabilele
-                organizationValueInvalid = undefined;
-                clientValueInvalid = undefined;
-                delete(organizationValueInvalid);
-                delete(clientValueInvalid);
-            } else {
-                // avem inputuri invalide, nu putem salva
-                // Nu dam save si nu inchidem formul
-                if (e.newData.OrganizationName == '') // da save si e gol campul
-                    $(".organization-div .input-organization").notify(
-                        "Don't leave me empty !",
-                        { position:"bottom" }
-                    );
-                else if (organizationValueInvalid)
-                    $(".organization-div .input-organization").notify(
-                        "'" + e.newData.OrganizationName + "' is not selected from the dropdown !", 
-                        // "'" + e.newData.OrganizationName + "' might not be a valid organization !", 
-                        // "Select the organization from the dropdown !", 
-                            { position:"bottom" }
-                    );
+            var jsonToSend = {
+                "data": e.oldData, 
+                "userID": userID_fromSession,
+                "action": "editContract"
+            };
 
-                if (e.newData.ClientName == '') // da save si e gol campul
-                    $(".client-div .input-client").notify(
-                        "Don't leave me empty !",
-                        { position:"bottom" }
-                    );
-                else if (clientValueInvalid)
-                    $(".client-div .input-client").notify(
-                        "'" + e.newData.ClientName + "' is not selected from the dropdown !", 
-                        // "'" + e.newData.ClientName + "' might not be a valid client !", 
-                        // "Select the client from the dropdown !", 
-                            { position:"bottom" }
-                    );
-                    e.cancel = true;
-                
-            } // end if
+            // daca variabila globala orgid sau clientid e setat
+            // atunci am selectat un id nou din dropdownuri, altfel il folosim pe cel vechi
+            if (orgID != '') {
+                jsonToSend.data.OrganizationID = orgID;
+            }
+            if (clientID != '') {
+                jsonToSend.data.ContractClientID = clientID;
+            }
+            console.log("rowupdating json", jsonToSend);
 
+            // luam toate valorile schimbate din newData 
+            // si le punem peste valorile vechi
+            for (var key in e.newData) 
+                if (e.newData.hasOwnProperty(key)) {
+                    jsonToSend.data[key] = e.newData[key];
+                }
+
+            contracts_action_editAddDelete(jsonToSend);
+            setTimeout(() => {
+                get_table_data();
+            }, 100); 
         },
         onEditingStart: function(e) {
+            // Pentru verificarea de edit pentru conflicte
+            // Luam toate butoanele de edit si le dam o clasa + k
+            // Luam clasele butonului pe carte suntem cu hover si luam a patra clasa, cea care ne intereseaza
+            var k = 1, editBtnClass;
+            $("a.dx-link.dx-link-edit.dx-icon-edit[title='Edit']").each(function() {
+                $(this).addClass("current-edited-contract-" + k++);
+                if ($(this).is(":hover")) {
+                    editBtnClass ="." + $(this).attr("class").split(" ")[3];
+                }
+            });
+            // Verificam statusul, cazul in care nu putem edita ca e cineva
+            if (window.weCanEdit != 1) {
+                editContractID = e.data.ContractID;
+                verifyEditStatus(userID_fromSession, e.data.ContractID, 1, editBtnClass); 
+            }
+            
+            // putem edita doar daca weCanEdit e 1
+            if (window.weCanEdit == 0)
+                e.cancel = true;
+            
             // settimeout ca sa aiba popup-ul timp sa apara mai intai, ca sa aiba ce sa modifice
             setTimeout(function() {
                 // Div-ul in care se afla titlul de la popup-ul de editare
                 $(".dx-datagrid-edit-popup .dx-toolbar-label .dx-item-content div").text("Edit contract");
-                // $(".dx-toolbar-button:nth-of-type(1) span").text("");
-                // $(".dx-toolbar-button:nth-of-type(2) span").text("");
             }); 
         },
-        onContentReady: function(e) {
-
-        },
-        // event pentru textarea la contract short description
         onEditorPreparing: function(e) {
+            // console.log("editorpreparing");
+            // event pentru textarea la contract short description
             if (e.parentType == "dataRow" && e.dataField == "ContractShortDescription") {
                 e.editorName = "dxTextArea";
                 e.colSpan = 2;
             }
-
-                
         },
         onRowRemoved: function(e) {
-            console.log(e.data.ContractID, userID_fromSession);
             var jsonToSend = {
                 "contractID": e.data.ContractID,
                 "userID": userID_fromSession,
                 "action": "deleteContract"
             };
             contracts_action_editAddDelete(jsonToSend);
+            setTimeout(() => {
+                get_table_data();
+            },100); 
+        },
+        onCellPrepared: function(e) {
+            // Privilegii de edit si delete
+          	if (!contractEditPrivilege)
+                e.cellElement
+                    .find(".dx-link-edit")
+                    .css({"color": "grey", "cursor": "context-menu", "pointer-events": "none"})
+                    .attr({"title": "No priviledges"});
+            if (!contractDeletePrivilege) 
+                e.cellElement
+                    .find(".dx-link-delete")
+                    .css({"color": "grey", "cursor": "context-menu", "pointer-events": "none"})
+                    .attr({"title": "No priviledges"});
+        },
+        onEditorPrepared: function(options) {
+            // setam default value pentru contract type si status id pentru addRow, nu se seteaza daca sunt pe edit
+            // cu typeof ne dam seama daca e definita nsau nu value
+            if (options.parentType == 'dataRow' && options.dataField == 'ContractStatusID' && typeof options.value == 'undefined') {
+                options.editorElement.dxSelectBox('instance').option('value', 4);
+            }
+            if (options.parentType == 'dataRow' && options.dataField == 'ContractTypeID' && typeof options.value == 'undefined') {
+                options.editorElement.dxSelectBox('instance').option('value', 1);
+            }
+
+            if (options.parentType == 'dataRow' && options.dataField == 'ContractShortDescription' && typeof options.value == 'undefined') {
+                setTimeout(() => {
+                    // Schibam numele din Save in add contract 
+                    $("div.dx-button-has-text[aria-label='Save'] span.dx-button-text").text("Add contract");
+                });
+            }
+            if (options.parentType == 'dataRow' && options.dataField == 'ContractShortDescription') {
+                setTimeout(() => {
+                    // De asemenea facem add contract sa nu poata fi apasat
+                    $("div.dx-button-has-text[aria-label='Save'] span.dx-button-text").closest("div.dx-item.dx-toolbar-item.dx-toolbar-button").wrapAll("<div class='add-contract-container add-contract-btn-notifier'><div class='pointer-e-none'></div></div>");
+                    $("div.dx-button-has-text[aria-label='Save'] span.dx-button-text").closest("div.dx-item.dx-toolbar-item.dx-toolbar-button").addClass("BLABLA").wrapAll("<div class='edit-contract-container edit-contract-btn-notifier'><div class='pointer-e-none'></div></div>");
+
+                    // click pe butonul de add contract, notifier exista doar daca nu se poate adauga
+                    $("div.add-contract-btn-notifier, div.edit-contract-btn-notifier").click(function() {
+                        // verificam contractBeginDate daca are sau nu ca sa afisam eroare
+                        if ($("input[id$='ContractBeginDate']").parent().siblings("input[type='hidden']").val() == '') {
+                            $("input[id$='ContractBeginDate']").parent().notify(
+                                "Start Date is invalid !", 
+                                { position:"bottom",
+                                autoHideDelay: 1500, }
+                            );
+                            $("input[id$='ContractBeginDate']").focus();
+                        }
+                        // number in
+                        if (contractNumberIn.a == 1) {
+                            $("input[id$='ContractNumberIn']").parent().notify(
+                                "Invalid contract number in !",
+                                { position:"bottom",
+                                autoHideDelay: 1500, }
+                            );
+                            $("input[id$='ContractNumberIn']").focus();
+                        }
+                        // client name
+                        if (clientName.a == 1) {
+                            $("input.input-client").notify(
+                                "Use the search button !",
+                                { position:"bottom",
+                                autoHideDelay: 1500, }
+                            );
+                            $("input.input-client").focus();
+                        }
+                        // contract name 
+                        if (contractName.a == 1) {
+                            $("input[id$='ContractName']").parent().notify(
+                                "Invalid contract name !",
+                                { position:"bottom",
+                                autoHideDelay: 1500, }
+                            );
+                            $("input[id$='ContractName']").focus();
+                        }
+                        // organization name
+                        if (organizationName.a == 1) {
+                            $("input.input-organization").notify(
+                                "Use the search button !",
+                                { position:"bottom",
+                                autoHideDelay: 1500, }
+                            );
+                            $("input.input-organization").focus();
+                        }
+
+                        // afisare pe butonul de add sau edit
+                        $(this).notify(
+                            "Check for errors !", 
+                            { position:"top",
+                            autoHideDelay: 1500, }
+                        );
+                    });
+                }); // end setTimeout
+            }
         }
     }); // end dxdatagrid
 }
 
+// luam privilegiile utilizatorului
+function get_user_privileges(userID) 
+{
+    jsonToSend = {
+        "userID": userID
+    };
 
+    $.ajax({
+        type: "POST",
+        url: "phpScripts/getUserPrivileges.php",
+        data: {myData: JSON.stringify(jsonToSend)}, // json_filter e global
+        dataType: "json",
+        success: function(response) 
+        {
+            // console.log("response", response);
+            for (var i = 0; i < Object.keys(response).length; i++) {
+                // Creem variabile globale pe baza privilegiilor
+                if (response.hasOwnProperty(i))
+                    // console.log(response[i]);
+                    switch(response[i].PrivilegeName) {
+                        case "ContractAdd":
+                            window.contractAddPrivilege = response[i].PrivilegeValue;
+                            break;
+                        case "ContractEdit":
+                            window.contractEditPrivilege = response[i].PrivilegeValue;
+                            break;
+                        case "ContractDelete":
+                            window.contractDeletePrivilege = response[i].PrivilegeValue;
+                            break;
+                        case "ContractEditOverwrite":
+                            window.contractEditOverwritePrivilege = response[i].PrivilegeValue;
+                            break;
+                    }
+            }
+            // console.log(contractAddPrivilege, contractEditPrivilege, contractDeletePrivilege, contractEditOverwritePrivilege);
+        },
+        error: function(xhr, status, text) {
+            console.log(xhr.status,"-------",status,"---------",text);
+        }
+    });
+}
 
 
 // Trimit valoarea, filtrul si coloana din BD. Mi se intorc toate valorile care coincid
 function getDBDataBasedOnValue(value, filter, columnName) 
 {
-    console.log("intra");
     var jsonToSend = {
         "value": value, // stringul inserat de utilizator in textbox
         "filter": filter, // tipul filtrului
         "columnName": columnName
     };
-    console.log(jsonToSend);
+    // console.log(jsonToSend);
 
     var numberOfElements;
 
@@ -978,11 +1320,11 @@ function getDBDataBasedOnValue(value, filter, columnName)
         data: {myData: JSON.stringify(jsonToSend)},
         dataType: "json",
         success: function(response) {
-            console.log("response", response);
+            // console.log("response", response);
             numberOfElements = response.NumberOfElementsSearchedByValue;
             // Daca a gasit macar un element
             if (numberOfElements && numberOfElements < 100) {
-                console.log("Nr de elemente", numberOfElements);
+                // console.log("Nr de elemente", numberOfElements);
                 $.ajax({
                     type: "POST",
                     url: "phpScripts/getDataFromString.php",
@@ -994,7 +1336,7 @@ function getDBDataBasedOnValue(value, filter, columnName)
                         sendDataToDropdown(columnName, dbResponse);
                     },
                     error: function() {
-                        console.log("nu merge sa primesti elementele");
+                        // console.log("nu merge sa primesti elementele");
                         // console.log("Ori nu merge, ori s-a dat add fara toti parametrii, dar oricum se baga bine in BD deci np");
                     }
                 }); // end ajax to get the elements
@@ -1055,27 +1397,26 @@ function sendDataToDropdown(columnName, data) {
             sourceDiv = ".client-div";
             listElementClass = 'client-li';
             break;
-    }
+}
 
+    // Punem headerul tabelului si creem tabelul
     $(sourceInput).after(
-        "<ul class='dropdown-input'></ul>"
+        "<div class='table-header'><span class='width-290px d-inline-block'>" + columnName + "</span><span class='width-290px d-inline-block'>Address</span></div><table class='dropdown-input'></table>"
     );
     
     for (var property in data) {
         if (data.hasOwnProperty(property)) {
             // Atribuim lista doar inputului de sub divul nostru, avem doua inputuri care se numesc la fel in 2 divuri diferite
-            $(sourceDiv + " ul.dropdown-input").append("<li class='" + listElementClass + " dropdown-element-editform align-middle'>" + data[property][columnName] + "</li>");
-            console.log(data[property][columnName]);
+            $(sourceDiv + " table.dropdown-input").append("<tr class='" + listElementClass + " dropdown-element-editform'> <td class='value'>" + data[property][columnName] + "</td><td>" + data[property]['Address'] + "</td><td class='d-none id'>" + data[property]['RowID'] + "</td></tr>");
         }
     }
 
 } // end sendDataToDropdown
 
-
 // Functie apelata din eventul de add/edit/delete contracts din dxdatagrid 
 function contracts_action_editAddDelete(newjson) 
 {
-    console.log("editareeee",newjson);
+    console.log(newjson);
     $.ajax({
         type: "POST",
         url: "phpScripts/addEditDelete_contracts_fromDB.php",
@@ -1083,12 +1424,91 @@ function contracts_action_editAddDelete(newjson)
         dataType: "json",
         success: function(returned_data) 
         {
-            console.log("merge");
+            console.log(returned_data);
+            // nu merge editul ca mi-a dat cineva overwrite deci nu pot duce editul la capat
+            if (newjson.action == 'editContract' && returned_data[0] == 0)
+                    alertify.alert().set({
+                        'basic': true,
+                        'closableByDimmer': true,
+                        'transition': 'none',
+                        'closable' : true,
+                        'message': "Edit failed ! Someone overwrote your attempt to edit the contract !",
+                    }).show();
         },
         error: function() {
-            console.log("nu mere");
+            // console.log("contracts_action_editAddDelete  ajax a dat eroare. daca e incompleta informatia s-a adaugat oricum");
             // console.log("Ori nu merge, ori s-a dat add fara toti parametrii, dar oricum se baga bine in BD deci np");
-            console.log("errrr");
+        }
+    }); // end ajax
+}
+
+// Functie care verifica statusul editului
+// actionID = in functie de valoare se face verificare, se scoate booleanul sau se incepe editarea
+// editbtnclass e clasa butonului de edit pe care am apasat, e diferita la toate
+function verifyEditStatus(userID, contractID, actionID, editBtnClass) 
+{
+    let jsonToSend = {
+        'userID': userID,
+        'contractID': contractID,
+        'actionID': actionID
+    };
+    $.ajax({
+        type: "POST",
+        url: "phpScripts/verifyEditStatus.php",
+        data: {myData: JSON.stringify(jsonToSend)}, 
+        dataType: "json",
+        success: function(returned_data) 
+        {
+            // console.log("data from DB", returned_data);
+
+            // returned data[0] pt ca e o linie returnata din BD
+            switch (actionID) {
+                case 1: // Verificam daca cineva editeaza
+                    if (returned_data[0].IsEditing) {
+                        // cineva editeaza !
+                        if (contractEditOverwritePrivilege) {
+                            // avem privilegiu de overwrite, intrebam daca vrea sa continue
+                            alertify.confirm().set({
+                                'message': 'Start editing time:    <b>' + returned_data[0].EditBeginDate + '</b> <br />Are you sure you want to overwrite ?',
+                                'closableByDimmer': false,
+                                'title': "<i><ins>" + returned_data[0].FirstName + " " + returned_data[0].LastName +  "</ins></i> is already editing this contract !",
+                                'transition': 'none',
+                                'closable' : false,
+                                'labels': {
+                                    'ok': 'Yes', 
+                                    'cancel': 'No'
+                                },           
+                                'onok': function() {
+                                    verifyEditStatus(userID, contractID, 2, editBtnClass); 
+                                },
+                                'oncancel': function() {
+                                }
+                            }).show();
+                        } else {
+                            // Nu are voie sa editeze, e ocupat contractul
+                            alertify.alert().set({
+                                'basic': true,
+                                'closableByDimmer': true,
+                                'transition': 'none',
+                                'closable' : true,
+                                'message': "<i><ins>" + returned_data[0].FirstName + " " + returned_data[0].LastName +  "</ins></i> is already editing this contract !" + '<br /> Start editing time:    <b>' + returned_data[0].EditBeginDate + '</b>',
+                            }).show();
+                            window.weCanEdit = 0;
+                        }
+                    } else {
+                        // nimeni nu editeaza
+                        window.weCanEdit = 1;
+                        $(editBtnClass).click();                        
+                    }
+                    break;
+                case 2: // a apasat ok si intram cu overwrite pe editare
+                    window.weCanEdit = 1;
+                    $(editBtnClass).click();
+                    break;
+            }
+        },
+        error: function() {
+            console.log("nu merge");
         }
     }); // end ajax
 }
@@ -1096,14 +1516,16 @@ function contracts_action_editAddDelete(newjson)
 // luam toata tabela de contracte din BD
 function get_table_data()
 {
+    var jsonToSend = {
+        'userID': userID_fromSession
+    };
     $.ajax({
         type: "POST",
         url: "phpScripts/get_table_data.php",
-        // data: {myData: JSON.stringify({"nuConteazaCeEAici": null})}, // nu avem data
+        data: {myData: JSON.stringify(jsonToSend)},
         dataType: "json",
         success: function(returned_data) 
         {
-            console.log(returned_data);
             // Din obj de obj facem vector de object
             var array = $.map(returned_data, function(value, index) {
                 return [value];
@@ -1119,30 +1541,31 @@ function get_table_data()
     }); // end ajax
 }
 
-// Functie care preia atunci cand se apasa pe edit optiunile care sunt afisate in dropdown pentru organizatii, clienti si status
-// Este facuta pentru dropdownurile contract type,
-// pe care le ia din baza de date cand le afiseaza, 
-// ca sa nu le mai definesc eu hardcodat
-
-function getDataOptionsForDropdowns()
+// Luam valorile din BD pentru contract type si status din edit popup si add
+function getDataForDropdowns()
 {
     $.ajax({
         type: "POST",
-        url: "phpScripts/getTableDataForDropdownInEdit.php",
-        success: function(returned_data) 
-        {
-            console.log("status organizatie clienti");
-            console.log(returned_data);
-            // Din obj de obj facem vector de object
-            var array = $.map(returned_data, function(value, index) {
-                return [value];
-            });
-
-            // Acum desenam tabelul
-            draw_table(array);
+        url: "phpScripts/getDataForLookups.php",
+        success: function(returned_data) {
+            var object_returned = JSON.parse(returned_data);
+            statusTable = [];
+            contractTypeTable = [];
+            agentTable = [];
+            i = j = k = 0;
+            for (var key in object_returned) {
+                if (!object_returned.hasOwnProperty(key)) 
+                    continue;
+                if (object_returned[key]['ColumnName'] == 'StatusName') {
+                    statusTable[i++] = object_returned[key];
+                } else if (object_returned[key]['ColumnName'] == 'ContractType') {
+                    contractTypeTable[j++] = object_returned[key];
+                } else if (object_returned[key]['ColumnName'] == 'AgentName') {
+                    agentTable[k++] = object_returned[key];
+                }
+            } 
         },
-        error: function(xhr, status, text)
-        {
+        error: function(xhr, status, text) {
                 console.log(xhr.status,"-------",status,"---------",text);
         }
     }); // end ajax
@@ -1161,7 +1584,7 @@ function changeSessionVar(sessionVarName, value)
         url: "phpScripts/changeSessionVar.php",
         data: {myData: JSON.stringify(jsonToSend)},
         success: function(returned_data) {
-            console.log(returned_data);
+            // console.log(returned_data);
         },
         error: function(xhr, status, text) {
                 console.log(xhr.status,"-------",status,"---------",text);

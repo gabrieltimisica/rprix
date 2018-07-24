@@ -19,6 +19,7 @@
     // ];
     // echo "<pre>";
     // echo ($data_sent->ResponsableID);
+    // print_r($data_sent);
     // echo "</pre>";
     $connection = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DATABASE);
     if ($connection->connect_error) 
@@ -35,10 +36,11 @@
             break;
         case 'editContract':
             $procedure = $connection->prepare('CALL rpx_sp_EditContract(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-            $procedure->bind_param("isisssssissii",  $data_sent->data->ContractID               ,
-                                                $data_sent->data->OrganizationName         , 
+            $procedure->bind_param("iiiissssissii",  
+                                                $data_sent->data->ContractID               ,
+                                                $data_sent->data->OrganizationID           , 
                                                 $data_sent->data->ContractTypeID           , 
-                                                $data_sent->data->ClientName               , 
+                                                $data_sent->data->ContractClientID         , 
                                                 $data_sent->data->ContractName             ,
                                                 $data_sent->data->ContractNumberIn         ,
                                                 $data_sent->data->ContractNumberOut        ,
@@ -53,11 +55,12 @@
 
         
         case 'addContract':
-            echo "merge adaugarea";
+            // echo "merge adaugarea";
             $procedure = $connection->prepare('CALL rpx_sp_AddContract(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-            $procedure->bind_param("sisssssissii",$data_sent->data->OrganizationName         , 
+            $procedure->bind_param("iiissssissii",
+                                                $data_sent->data->OrganizationID           , 
                                                 $data_sent->data->ContractTypeID           , 
-                                                $data_sent->data->ClientName               , 
+                                                $data_sent->data->ContractClientID         , 
                                                 $data_sent->data->ContractName             ,
                                                 $data_sent->data->ContractNumberIn         ,
                                                 $data_sent->data->ContractNumberOut        ,
@@ -74,7 +77,11 @@
 
     $procedure->execute();
     $procedure_result = $procedure->get_result();
-    // print_r( $procedure_result = mysqli_fetch_object($procedure_result));
-    echo '1';
+    // Pusa pentru conflicte, daca i-am facut overwrite si inca incearca sa salveze editu, primeste din BD  ca nu se poate
+    // si afisez un alertify
+    if ($data_sent->action == 'editContract')
+        echo json_encode(mysqli_fetch_object($procedure_result));
+    else
+        echo '1';
     $connection->close();
 ?>
