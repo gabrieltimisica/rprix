@@ -12,18 +12,9 @@
         setcookie("c_id", FALSE, -1, '/', "", FALSE, TRUE);
         session_destroy();
         header('Location: ../index.php'); // daca nu are ce trebuie, il trimitem la login
-    } else  // Are sesiune temporara buna sau cookie
-    {
-        if ($_SESSION['keep_logged'] == 1) // daca foloseste cookiuri, il updatam cu noul id
-        {
-            setcookie("c_id", session_id(), $_SESSION["cookie_exp_date"], '/', "", FALSE, TRUE);
-        }
-        else
-        {
-            setcookie("c_id", FALSE, -1, '/', "", FALSE, TRUE);
-        }
+    } else {
 
-    } // end else
+    }
 ?>
 
 <!DOCTYPE html>
@@ -43,9 +34,15 @@
     <script type="text/javascript" src="https://cdn3.devexpress.com/jslib/18.1.3/js/dx.all.js"></script>
     <!-- Ready function -->
     <script src="../js/scripts/contracts.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
     <!-- Notify.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/notify.min.js"></script>
+    <!-- Alertify -->
+    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.11.1/build/alertify.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.11.1/build/css/alertify.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.11.1/build/css/themes/default.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.11.1/build/css/themes/semantic.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.11.1/build/css/themes/bootstrap.min.css"/>
     <title>Contracts</title>
 </head>
 <body>
@@ -53,22 +50,14 @@
         <div class="topnav">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-sm-block d-none pl-3 pr-3">
-                    <p class="mb-0">LOGO ROMPRIX</p>
+                    <span class="mb-0" style='font-size: 35px'>ROMPRIX</span>
+                    <span class="" style="top: 3px; left: 165px; position: absolute">&#169;</span>
                 </div>
-                <!-- <div class="col-3 d-none d-lg-block text-center">
-                    <p class="mb-0">Bine ai venit!</p>
-                </div> -->
                 <div class="display-user col col-sm-6 col-md-5 col-lg-3 d-flex justify-content-between justify-content-sm-end align-items-center">
-                    <div class="d-inline-block col">
+                    <div class="d-inline-block">
                         <img src="https://png.icons8.com/ios/50/000000/gender-neutral-user-filled.png">
-                        <span>Gabriel Timisica
-                            <?php 
-                                // echo ($_SESSION['prenume'] + " " + $_SESSION['nume']);
-                            ?> 
-                        </span> 
+                        <?php echo $_SESSION['prenume'] . " " . $_SESSION['nume']; ?> 
                     </div> 
-
-                    <!-- <img class="menu-icon d-none d-sm-inline-block align-items-center" src="https://png.icons8.com/ios-glyphs/50/000000/menu.png"> -->
                     <div class="dropdown-block d-sm-inline-block align-items-center">
                         <img class="menu-icon" style="" src="https://png.icons8.com/ios-glyphs/50/000000/menu.png">
                         <ul class="dropdown-menu1 not-visible">
@@ -80,37 +69,40 @@
             </div> <!-- end div d-flex -->
         </div> <!-- end div topnav -->
 
-
-
         <!-- Content - - - - - - - - - - - - - - - - - -->
-        <h3 class="page-header text-center">Gestiunea contractelor</h3>
+        <h2 class="page-header text-center"><b>CONTRACT MANAGEMENT</b></h2>
         <h5 class="mb-3">
-            <a href="../" style="color: #aa4b4d">Projects / </a>
-            <a href="" style="">Gestiunea Contractelor</a>
+            <a href="home.php" style="color: #aa4b4d; margin-left: 10px">Projects / </a>
+            <a href="" style="">Contract Management</a>
         </h5>
         <!-- Headerul de deasupra tabelului pentru custom buttons -->
         <div class="dataGrid-custom-header col">
-            <div class="col-2">
-                <!-- Quick filters -->
-                <input id="filter-by-status-active" class="filter-checkbox" type="checkbox">
-                <label class="checkbox-label-filter checkbox-active" for="filter-by-status-active"> Active </label>
-                <br>
-                <input id="filter-by-status-closed" class="filter-checkbox" type="checkbox">
-                <label class="checkbox-label-filter checkbox-closed" for="filter-by-status-closed"> Closed </label>
-                <br>
-                <input id="filter-by-status-canceled" class="filter-checkbox" type="checkbox">
-                <label class="checkbox-label-filter checkbox-canceled" for="filter-by-status-canceled"> Canceled </label>
-                <br>
-                <input id="filter-by-status-preliminary" class="filter-checkbox" type="checkbox">
-                <label class="checkbox-label-filter checkbox-preliminary" for="filter-by-status-preliminary"> Preliminary </label>
-                <br>
-                <button id="clear-datagrid-filters" type="button">Clear filters</button>
-            </div>
-            <div class="col-3">
-                <button id="reset-workspace" type="button" >Reset workspace</button>
-                <input id="save-workspace-checkbox" type="checkbox" checked>
-                <label for="save-workspace-checkbox">Continue where I left off</label>
-            </div>
+            <div style='height: 5px'></div>
+            <!-- Quick filters -->
+            <!-- Active -->
+            <input id="filter-by-status-active" class="filter-checkbox" type="checkbox">
+            <label class="checkbox-label-filter checkbox-active" for="filter-by-status-active"> Active </label>
+            <span style="margin-left: 10px"></span>
+            <!-- Closed -->
+            <input id="filter-by-status-closed" class="filter-checkbox" type="checkbox">
+            <label class="checkbox-label-filter checkbox-closed" for="filter-by-status-closed"> Closed </label>
+            <span style="margin-left: 10px"></span>
+            <!-- Canceled -->
+            <input id="filter-by-status-canceled" class="filter-checkbox" type="checkbox">
+            <label class="checkbox-label-filter checkbox-canceled" for="filter-by-status-canceled"> Canceled </label>
+            <span style="margin-left: 10px"></span>
+            <!-- Preliminary -->
+            <input id="filter-by-status-preliminary" class="filter-checkbox" type="checkbox">
+            <label class="checkbox-label-filter checkbox-preliminary" for="filter-by-status-preliminary"> Preliminary </label>
+            <span style="margin-left: 10px"></span>
+            <!-- Deleted -->
+            <input id="filter-by-status-deleted" class="filter-checkbox" type="checkbox">
+            <label class="checkbox-label-filter checkbox-deleted" for="filter-by-status-deleted"> Deleted </label>
+            <span style="margin-left: 10px"></span>
+            <!-- Others -->
+            <button id="clear-datagrid-filters" type="button">Clear filters</button>
+            <span style="margin-left: 10px"></span>
+            <button id="reset-workspace" type="button" >Reset workspace</button>
         </div> <!--  end custom header  -->
         <div id='dataGrid'></div>
     </div> <!-- END container -->
@@ -120,9 +112,6 @@
 <script>
     // Aici salvez in variabila useridfromsession id-ul utilizatorului ca sa nu dau ajax mai tarziu, ca sa il trimit cand dau delete prin ajax sa stim cine a facut modificarea
     var userID_fromSession = "<?php echo $_SESSION['userID']; ?>";
-    // Daca vrea sau nu sa ii apara vechiul workspace
-    var continueWhereILeft = "<?php echo $_SESSION['saveWorkspaceOnExit'] ?>";
-    console.log("continue din sesiune", continueWhereILeft);
 </script>
 </html>
 

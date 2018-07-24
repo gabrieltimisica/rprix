@@ -1,4 +1,7 @@
 <?php
+    // Cu scriptul asta verificam nr de elemente pe care le 
+    // gaseste baza de date bazat pe un string dat
+    // 
     include('../db_config.php');
     $data_sent = json_decode($_POST['myData']);
 

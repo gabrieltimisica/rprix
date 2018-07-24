@@ -1,4 +1,5 @@
 <?php
+    // Apelat la apasarea butonului de logout
     session_start();
     session_unset();
     unset($_COOKIE["c_id"]);
