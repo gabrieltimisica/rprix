@@ -3,7 +3,6 @@
     include("../db_config.php");
     ini_set('memory_limit', '512M');
     // error_reporting(0);
-
     $data_sent = json_decode($_POST['myData']);
 
     $conn = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DATABASE);

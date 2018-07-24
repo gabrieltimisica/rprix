@@ -18,6 +18,7 @@
     //     "userID" => 2
     // ];
     // echo "<pre>";
+    // echo ($data_sent->ResponsableID);
     // print_r($data_sent);
     // echo "</pre>";
     $connection = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_DATABASE);

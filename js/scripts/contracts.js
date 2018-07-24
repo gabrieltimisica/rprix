@@ -820,22 +820,107 @@ function draw_table(table_data)
                             });
                         }); // end settimeout
                     } // end template: function(data, itemElement)
-                },
-                {
+                } , {
                     itemType: "group",
-                    colSpan: 2,
+                    colSpan: 1,
                     template: function(data, itemElement) {
-                        var div = document.createElement("div");
-                        itemElement.get(0).appendChild(div);
-                        $(div).dxFileUploader({
-                            multiple: true,
-                            accept: "*",
-                            selectButtonText: "Select file",
-                            labelText: "Upload the contract only in format PDF",
-                            uploadMode: "useForm",
-                            uploadUrl: ""// aici vom pune adresa serverului unde vor fi salvate contractele;
-                        }).dxFileUploader("instance");
-                    }// end template
+                      var div = document.createElement("div");
+                      itemElement.get(0).appendChild(div);
+                      $(div).append("<button id = \"upload-button\" class = \"button\">Add contract file<img src=\"../img/contract-icon.png\" class=\"img-fluid contract-image\"></button>");
+                      $( "#upload-button" ).click(function() {
+                          alertify.confirm().set({
+                                              'maximizable': true,
+                                            //   'basic':true,
+                                              'title':'Upload contract',
+                                              'closableByDimmer': false,
+                                              'labels':{'cancel':'Apply'},
+                                              'resizable': true,
+                                              'transition':'none',
+                                            //   'defaultFocus': 'ok',
+                                              'onshow':function()
+                                              {  
+                                                $(".ajs-ok").css({'display':'none'});
+                                                $(".ajs-cancel").addClass("bg-success");
+                                                $(".ajs-cancel").prop("disabled",true);
+                                                $(".ajs-content").html("<form id=\"form\" class=\"mb-5\" action=\"\" method=\"\" enctype=\"multipart/form-data\">");
+                                                $("#form").append(" <input id=\"choose-button\" name =\"file[]\"class = \"mb-5\"type=\"file\" accept=\"\" multiple=\"multiple\" >");
+                                                $("#form").append("<br><label for=\"ContractDescription\">Contract file description:</label>"); 
+                                                $("#form").append("<textarea class=\"form-control mb-5\" id=\"ContractDescription\" name=\"description\" rows=\"3\"></textarea></div>"); 
+                                                $("#form").append("<div class=\"d-flex justify-content-center\"><input id=\"upload-contract\"  type=\"submit\" value=\"Upload contract\"  ></div>");                                          
+                                              }
+                                            }).show();
+                                        $("#form").submit(function(){ event.preventDefault();});// sa nu se mai inchida popupul
+                                        $("#upload-contract").click(function(){
+                                            var data = [];
+                                            var j = 0;
+                                            $.each($("input[type='file']")[0].files, function(i, file) {
+                                                // console.log($_FILES["file"]["tmp_name"]);
+                                                // console.log(document.getElementById('choose-button').value);
+                                                console.log($("#choose-button").val());
+                                                
+                                                data[j] = new Object();
+                                                // data[j].tm = $_FILES["file"]["tmp_name"];
+                                                data[j].name = $("input[type='file']")[0].files[i].name;
+                                                data[j].size = $("input[type='file']")[0].files[i].size;
+                                                data[j].type = $("input[type='file']")[0].files[i].type;
+                                                data[j].temporary = $("input[type='file']")[0].files[i].tmp_name;
+                                                data[j].path = $("input[type='file']").val();
+                                                data[j].description = $("textarea#ContractDescription").val();
+                                                data[j].userID = userID_fromSession;
+                                                // data[j].path = $("#ContractDescription").value;
+                                                j++;
+                                            });     
+                                            $.ajax({
+                                                url: 'upload.php', 
+                                                dataType: 'json', 
+                                                cache: false,
+                                                data: {"myData": JSON.stringify(data)} ,                         
+                                                type: 'POST',
+                                                success: function(php_script_response){
+                                                    
+                                                }
+                                             });
+                                        });
+                        
+
+                      });
+                    }// end template: function(data, itemElement)
+                }, {
+                    itemType: "group",
+                    colSpan: 1,
+                    template: function(data, itemElement) 
+                    {
+                    var div = document.createElement("div");
+                    itemElement.get(0).appendChild(div);
+                    $(div).append("<button id = \"upload-files-button\" class = \"button\">Add other files<img src=\"../img/file-icon.png\" class=\"img-fluid contract-image\"></button>");
+                    $( "#upload-files-button" ).click(function() {
+                        alertify.confirm().set({
+                                              'maximizable': true,
+                                            //   'basic':true,
+                                              'title':'Upload other files',
+                                              'closableByDimmer': false,
+                                              'labels':{'cancel':'Apply'},
+                                              'resizable': true,
+                                              'transition':'none',
+                                              'onshow':function()
+                                              {  
+                                                $(".ajs-ok").css({'display':'none'});
+                                                $(".ajs-cancel").addClass("bg-success");
+                                                // $(".ajs-content").html("<h3 id=\"title-popup\" class=\"d-flex justify-content-center mb-5\"></h3>");
+                                                $(".ajs-content").html("<form id=\"form\" class=\"mb-5\" action=\"\" method=\"\" enctype=\"multipart/form-data\">");
+                                                $("#form").append(" <input id=\"choose-button\" class = \"mb-5\"type=\"file\" accept=\"\"  >");
+                                                $("#form").append("<br><label for=\"ContractDescription\">File description:</label>"); 
+                                                $("#form").append("<textarea class=\"form-control mb-5\" id=\"ContractDescription\" rows=\"3\"></textarea></div>"); 
+                                                $("#form").append("<div class=\"d-flex justify-content-center\"><input id=\"upload\"  type=\"submit\" value=\"Upload files\"  ></div>");                                          
+                                              }
+                                            }).show();
+                                        $("#form").submit(function(){ event.preventDefault();});// sa nu se mai inchida popupul
+                                        $("#upload").click(function(){console.log("plm")});
+
+                        
+
+                      }); // end alertify
+                    }, // end upload
                 },
             ]}, // end form si ] se inchide items
             popup: {
@@ -848,7 +933,7 @@ function draw_table(table_data)
                     my: "center",
                     at: "center",
                     of: window
-                }  
+                }               
             },
             texts: {
                 deleteRow: 'Cancel', 
@@ -1506,3 +1591,7 @@ function changeSessionVar(sessionVarName, value)
         }
     }); // end ajax
 }
+
+
+
+
