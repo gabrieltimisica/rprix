@@ -35,8 +35,8 @@
             $procedure->bind_param("ii",$data_sent->contractID, $data_sent->userID);
             break;
         case 'editContract':
-            $procedure = $connection->prepare('CALL rpx_sp_EditContract(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-            $procedure->bind_param("iiiissssissii",  
+            $procedure = $connection->prepare('CALL rpx_sp_EditContract(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+            $procedure->bind_param("iiiissssissiis",  
                                                 $data_sent->data->ContractID               ,
                                                 $data_sent->data->OrganizationID           , 
                                                 $data_sent->data->ContractTypeID           , 
@@ -49,15 +49,16 @@
                                                 $data_sent->data->ContractBeginDate        ,
                                                 $data_sent->data->ContractExpireDate       ,
                                                 $data_sent->userID                         , 
-                                                $data_sent->data->ResponsableID
+                                                $data_sent->data->ResponsableID            ,
+                                                $data_sent->FileToken
                                                 ); 
             break;
 
         
         case 'addContract':
             // echo "merge adaugarea";
-            $procedure = $connection->prepare('CALL rpx_sp_AddContract(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-            $procedure->bind_param("iiissssissii",
+            $procedure = $connection->prepare('CALL rpx_sp_AddContract(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+            $procedure->bind_param("iiissssissiis",
                                                 $data_sent->data->OrganizationID           , 
                                                 $data_sent->data->ContractTypeID           , 
                                                 $data_sent->data->ContractClientID         , 
@@ -69,7 +70,8 @@
                                                 $data_sent->data->ContractBeginDate        ,
                                                 $data_sent->data->ContractExpireDate       ,
                                                 $data_sent->userID                         ,
-                                                $data_sent->data->ResponsableID
+                                                $data_sent->data->ResponsableID            ,
+                                                $data_sent->FileToken
                                                 );
             break;
     }

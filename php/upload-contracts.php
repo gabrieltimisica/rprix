@@ -4,6 +4,7 @@ include("db_config.php");
 include("ftp_config.php");
 
 
+
 for($i = 0; $i < count($_FILES); $i++) {
     $file = $_FILES['file'.$i];
 
@@ -24,6 +25,7 @@ for($i = 0; $i < count($_FILES); $i++) {
 
     $FileDescription = $_POST['fileDescription']; 
 
+    $FileToken = $_POST['fileToken'];
     //$procedure = $db->prepare('CALL rpx_sp_NumberOfFiles');
     // $procedure->bind_param();
     //$procedure->execute();
@@ -36,15 +38,16 @@ for($i = 0; $i < count($_FILES); $i++) {
     //$FileUploadNewName = $FileUploadNewName.".".$OriginalFileExtension;
     //unset($procedure);
     unset($procedure);
-    $procedure = $db->prepare('CALL rpx_sp_AddFile(?, ?, ?, ?, ?, ?, ?)');
-    $procedure->bind_param("sisssis",  
+    $procedure = $db->prepare('CALL rpx_sp_AddFile(?, ?, ?, ?, ?, ?, ?, 1, ?)');
+    $procedure->bind_param("sisssiss",  
                                 $OriginalFileName,
                                 $FileSize,
                                 $FilePath,
                                 $OriginalFileExtension,
                                 $FileType,
                                 $UserIDUpload,
-                                $FileDescription
+                                $FileDescription,
+                                $FileToken
                             ); 
     $procedure->execute();
     $ResultOfProcedure = $procedure->get_result();
@@ -81,49 +84,6 @@ $jsonen= json_encode($WasUploaded);
 echo $jsonen;
 ftp_close($ftpConn);
 $db->close();
-
-
-// $files = $_FILES['file'];
-// print_r($files)
-// $NumberOfFiles = count($files);
-// for($i = 0; $i < $number_of_files; $i++)
-// {
-//     $original_file_name = $files["file".i]['name'];
-//     echo $original_file_name;
-// }
-// $files["file".i]
-// $data_sent = json_decode($_POST);
-
-// print_r( $data_sent);
-// $number_of_files = count($data_sent);
-// for($i = 0; $i < $number_of_files; $i++)
-// {
-//     $original_file_name = $data_sent[$i]->name;
-//     $file_size = $data_sent[$i]->size;
-//     $file_path = $data_sent[$i]->path;
-//     $uploadedExtension = explode(".",$original_file_name);
-//     $original_file_extension = $uploadedExtension[1];
-//     $file_type = $data_sent[$i]->type;
-//     $file_upload_new_name = ($i+1).".cnt";
-//     $userID_upload = $data_sent[$i]->userID;
-//     $PHP_session_id =  session_id();
-//     $file_description = $data_sent[$i]->description;
-//     // $file_temporary_name = $data_sent[$i]->temporary; 
-//     $procedure = $db->prepare('CALL rpx_sp_AddFile(?, ?, ?, ?, ?, ?, ?, ?, ?)');
-//     $procedure->bind_param("sissssiss",  
-//                                 $original_file_name,
-//                                 $file_size,
-//                                 $file_path,
-//                                 $original_file_extension,
-//                                 $file_type,
-//                                 $file_upload_new_name,
-//                                 $userID_upload,
-//                                 $PHP_session_id,
-//                                 $file_description
-//                             ); 
-//     $procedure->execute();
-    // $success = ftp_put($ftpConn, "/Dropbox/_contracte", $file_path, FTP_ASCII);
-// }//end for
 
 
 

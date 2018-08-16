@@ -10,6 +10,7 @@ var arrayOfValuesToBeFilteredFromHeaderCheckboxes = [];
 
 $(function() {
     // luam privilegiile utilizatorului
+    console.log(userID_fromSession);
     get_user_privileges(userID_fromSession);
     // Luam informatia pentru lookup-uri: contract type, status, responsables din edit/add
     getDataForDropdowns();
@@ -808,17 +809,26 @@ function draw_table(table_data)
                                 contractNumberIn = undefined;
                                 clientName = undefined;
                                 contractName = undefined;
+                                window.rndString = undefined;
                                 delete(contractName);
                                 delete(contractNumberIn);
                                 delete(organizationName);
                                 delete(clientName);
+                                delete window.rndString;  
+                              
+                                $.ajax({
+                                      type: 'POST',
+                                      data: { Token: rndString },
+                                      url: "phpScripts/DeleteFileFromServerIfClosePopup.php",
+                                      dataType:"json"
+                                 });
                                 // wecanedit la contracte ... cazul in care dam close la popup, trebuie pusa valoarea pe 0
                                 if ($("div.dx-popup-title div:contains('Edit contract')").length > 0) {
-                                    window.weCanEdit = 0;
-                                    verifyEditStatus(userID_fromSession, editContractID, 3, null);
-                                    clientID = '';
-                                    orgID = '';
-                                }
+                                      window.weCanEdit = 0;
+                                      verifyEditStatus(userID_fromSession, editContractID, 3, null);
+                                      clientID = '';
+                                      orgID = '';
+                                }   
                             });
                         }); // end settimeout
                     } // end template: function(data, itemElement)
@@ -826,38 +836,43 @@ function draw_table(table_data)
                     itemType: "group",
                     colSpan: 1,
                     template: function(data, itemElement) {
-                      var div = document.createElement("div");
-                      itemElement.get(0).appendChild(div);
-                      $(div).append("<button id = \"upload-button\" class = \"button\">Add contract file<img src=\"../img/contract-icon.png\" class=\"img-fluid contract-image\"></button>");
-                      $( "#upload-button" ).click(function() {
+                        if (typeof rndString === 'undefined' || rndString == '') {
+                            var stringLength = 15;
+                            var stringArray = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','!','?'];
+                            window.rndString = "";
+                            console.log(rndString);
+                            for (var i = 1; i < stringLength; i++) { 
+                                var rndNum = Math.ceil(Math.random() * stringArray.length) - 1;
+                                rndString = rndString + stringArray[rndNum];
+                            }
+                            console.log(rndString)
+                        }
+                        
+                        var div = document.createElement("div");
+                        itemElement.get(0).appendChild(div);
+                        $(div).append("<button id = \"upload-button\" class = \"button\">Add contract file<img src=\"../img/contract-icon.png\" class=\"img-fluid contract-image\"></button>");
+                        $( "#upload-button" ).click(function() {
                           alertify.confirm().set({
                                               'maximizable': true,
                                             //   'basic':true,
                                               'title':'Upload contract',
                                               'closableByDimmer': false,
-                                              'labels':{'cancel':'Apply'},
+                                              'defaultFocus':false,
+                                              'labels':{'cancel':'','ok':''},
                                               'resizable': true,
+                                              'autoReset': true ,   
                                               'transition':'none',
                                             //   'defaultFocus': 'ok',
+                                            'message':'<form enctype="multipart/form-data"><input id = "ChooseFileButton" name="file" class="mb-5" type="file" multiple="true" /><br/><label for=\"ContractDescription\">Contract file description:</label><textarea class=\"form-control mb-5\" id=\"ContractDescription\" name=\"description\" rows=\"3\"></textarea><div class=\"d-flex justify-content-center\"><input type="button" id = "UploadButton" value="Upload Contract"/></div></form>',
                                               'onshow':function()
                                               {  
+                                                // console.log(rndString);
                                                 $(".ajs-ok").css({'display':'none'});
-                                                $(".ajs-cancel").addClass("bg-success");
-                                                $(".ajs-cancel").prop("disabled",true);
-                                                // $(".ajs-content").html("<form id=\"form\" class=\"mb-5\" action=\"\" method=\"POST\" enctype=\"multipart/form-data\">");
-                                                $(".ajs-content").html('<form enctype="multipart/form-data"><input name="file" class="mb-5" type="file" multiple="true"/><br/><label for=\"ContractDescription\">Contract file description:</label><textarea class=\"form-control mb-5\" id=\"ContractDescription\" name=\"description\" rows=\"3\"></textarea><div class=\"d-flex justify-content-center\"><input type="button" value="Upload Contract"/></div></form>');
-                                                // $("#form").append(" <input id=\"choose-button\" name =\"file[]\"class = \"mb-5\"type=\"file\" accept=\"\" multiple=\"true\" >");
-                                                // $("#form").append("<br><label for=\"ContractDescription\">Contract file description:</label>"); 
-                                                // $("#form").append("<textarea class=\"form-control mb-5\" id=\"ContractDescription\" name=\"description\" rows=\"3\"></textarea></div>"); 
-                                                // $("#form").append("<div class=\"d-flex justify-content-center\"><input id=\"upload-contract\"  type=\"submit\" value=\"Upload contract\"  ></div>");                                          
-                                              }
+                                                $(".ajs-cancel").css({'display':'none'});
+                                                $(".ajs-dialog").css({'height':'500px'});
+                                              },
                                             }).show();
-                                        $("form").submit(function(){ event.preventDefault();});// sa nu se mai inchida popupul
-                                        $(":button").click(function(){
-                                            // var file_data = $('#choose-button').prop('files')[0];
-                                            // console.log($('#choose-button').prop('files')[0]);   
-                                            // var form_data = new FormData();                  
-                                            // form_data.append('file', file_data);
+                                        $("#UploadButton").click(function(){
                                             /* Now send the gathered files data to our backend server */
                                             var form = $('#form')[0]; // You need to use standard javascript object here
                                             var formData = new FormData(form);
@@ -866,53 +881,109 @@ function draw_table(table_data)
                                             });//end of $.each($("input[type='file']")[0].files, function(i, file)
                                             formData.append('fileDescription',$("textarea#ContractDescription").val());
                                             formData.append('UserIDUpload',userID_fromSession);
+                                            formData.append('fileToken',rndString);
                                             $.ajax({
                                                 type: 'POST',
                                                 cache: false,
+                                                data: formData,
+                                                url: 'upload-contracts.php',
+                                                dataType:"json",
                                                 processData: false,
                                                 contentType: false,
-                                                data: formData,
-                                                url: 'upload.php'
-                                            });// end of ajax
+                                                
+                                            }).done((rezultat) => {
+                                                switch (rezultat.WasUploaded) {
+                                                case 0 :
+                                                    $("[class^='alertify']").remove();
+                                                    alertify.error('An error has been occurred.');
+                                                    console.log('cazul 0');
+                                                    break;
+                                                case 1:
+                                                    $("[class^='alertify']").remove();
+                                                    alertify.success('Contract was uploaded with succes.'); 
+                                                    console.log('cazul 1');
+                                                    break;
+                                                case 2:
+                                                    $("[class^='alertify']").remove();
+                                                    alertify.error('No files selected. Plese retry uploading.');
+                                                    console.log('cazul 2');
+                                                    break;
+                                                }
+                                            });// end of done
+                                            alertify.confirm().close();
+                                            this.form.reset();
                                     });//$(":button").click(function()
                       });//$( "#upload-button" ).click(function()
                     }// end of template: function(data, itemElement) 
                 }, {
                     itemType: "group",
                     colSpan: 1,
-                    template: function(data, itemElement) 
-                    {
-                    var div = document.createElement("div");
-                    itemElement.get(0).appendChild(div);
-                    $(div).append("<button id = \"upload-files-button\" class = \"button\">Add other files<img src=\"../img/file-icon.png\" class=\"img-fluid contract-image\"></button>");
-                    $( "#upload-files-button" ).click(function() {
-                        alertify.confirm().set({
+                    template: function(data, itemElement) {
+                      var div = document.createElement("div");
+                      itemElement.get(0).appendChild(div);
+                      $(div).append("<button id = \"upload-other-files-button\" class = \"button\">Add other files<img src=\"../img/contract-icon.png\" class=\"img-fluid contract-image\"></button>");
+                      $( "#upload-other-files-button" ).click(function() {
+                        // console.log(rndString);  
+                          alertify.confirm().set({
                                               'maximizable': true,
-                                            //   'basic':true,
                                               'title':'Upload other files',
                                               'closableByDimmer': false,
-                                              'labels':{'cancel':'Apply'},
-                                              'resizable': true,
+                                              'labels':{'cancel':''},
+                                              'resizable': true,    
                                               'transition':'none',
+                                              'message':'<form enctype="multipart/form-data"><input id = "ChooseFileButton" name="file" class="mb-5" type="file" multiple="true" /><br/><label for=\"ContractDescription\">File description:</label><textarea class=\"form-control mb-5\" id=\"ContractDescription\" name=\"description\" rows=\"3\"></textarea><div class=\"d-flex justify-content-center\"><input type="button" id = "UploadButton2" value="Upload Files"/></div></form>',
                                               'onshow':function()
                                               {  
                                                 $(".ajs-ok").css({'display':'none'});
-                                                $(".ajs-cancel").addClass("bg-success");
-                                                // $(".ajs-content").html("<h3 id=\"title-popup\" class=\"d-flex justify-content-center mb-5\"></h3>");
-                                                $(".ajs-content").html("<form id=\"form\" class=\"mb-5\" action=\"\" method=\"\" enctype=\"multipart/form-data\">");
-                                                $("#form").append(" <input id=\"choose-button\" class = \"mb-5\"type=\"file\" accept=\"\"  >");
-                                                $("#form").append("<br><label for=\"ContractDescription\">File description:</label>"); 
-                                                $("#form").append("<textarea class=\"form-control mb-5\" id=\"ContractDescription\" rows=\"3\"></textarea></div>"); 
-                                                $("#form").append("<div class=\"d-flex justify-content-center\"><input id=\"upload\"  type=\"submit\" value=\"Upload files\"  ></div>");                                          
+                                                $(".ajs-cancel").css({'display':'none'});
+                                                $(".ajs-dialog").css({'height':'500px'}); 
+                                              },
+                                              'oncancel':function(){
+                                                $('.ajs-hidden').each(function () {
+                                                    $(this).remove();
+                                                });       
                                               }
                                             }).show();
-                                        $("#form").submit(function(){ event.preventDefault();});// sa nu se mai inchida popupul
-                                        $("#upload").click(function(){console.log("plm")});
-
-                        
-
-                      }); // end alertify
-                    }, // end upload
+                                        // $("form").submit(function(){ event.preventDefault();});// sa nu se mai inchida popupul
+                                        $("#UploadButton2").click(function(){
+                                            // /* Now send the gathered files data to our backend server */
+                                            var form = $('#form')[0]; // You need to use standard javascript object here
+                                            var formData = new FormData(form);
+                                            $.each($("input[type='file']")[0].files, function(i, file) {
+                                                formData.append('otherfile' + i, $('input[type=file]')[0].files[i]);
+                                            });//end of $.each($("input[type='file']")[0].files, function(i, file)
+                                            formData.append('fileDescription',$("textarea#ContractDescription").val());
+                                            formData.append('UserIDUpload',userID_fromSession);
+                                            formData.append('fileToken',rndString);
+                                            $.ajax({
+                                                type: 'POST',
+                                                cache: false,
+                                                data: formData,
+                                                url: 'upload-other-files.php',
+                                                dataType:"json",
+                                                processData: false,
+                                                contentType: false
+                                            }).done((rezultat) => {
+                                                switch (rezultat.WasUploaded) {
+                                                case 0 :
+                                                    $("[class^='alertify']").remove();
+                                                    alertify.error('An error has been occurred.');
+                                                    break;
+                                                case 1:
+                                                    $("[class^='alertify']").remove();
+                                                    alertify.success('File was uploaded with succes.'); 
+                                                    break;
+                                                case 2:
+                                                    $("[class^='alertify']").remove();
+                                                    alertify.error('No files selected. Plese retry uploading.');
+                                                    break;
+                                                }//end switch
+                                            });// end of done
+                                            alertify.confirm().close();
+                                            this.form.reset();
+                                    });//$("#UploadButton2").click(function()
+                      });//$( "#upload-other-files-button" ).click(function()
+                    }// end of template: function(data, itemElement) 
                 },
             ]}, // end form si ] se inchide items
             popup: {
@@ -1042,10 +1113,11 @@ function draw_table(table_data)
         onRowInserted: function(e) { 
             // opresc timerul pentru timeoutul de la begindate doamne fereste
             stopDateTimeTimeout = 1;        
-
+            console.log("al doilea",rndString);
             var jsonToSend = {
                 "data": e.data, // informatia despre contract adaugata
                 "userID": userID_fromSession,
+                'FileToken':rndString,
                 "action": "addContract"
             };
 
@@ -1072,6 +1144,7 @@ function draw_table(table_data)
             var jsonToSend = {
                 "data": e.oldData, 
                 "userID": userID_fromSession,
+                'FileToken':rndString,
                 "action": "editContract"
             };
 
@@ -1117,7 +1190,9 @@ function draw_table(table_data)
             // putem edita doar daca weCanEdit e 1
             if (window.weCanEdit == 0)
                 e.cancel = true;
-            
+            //aici formez tokenul
+
+
             // settimeout ca sa aiba popup-ul timp sa apara mai intai, ca sa aiba ce sa modifice
             setTimeout(function() {
                 // Div-ul in care se afla titlul de la popup-ul de editare
@@ -1418,7 +1493,8 @@ function sendDataToDropdown(columnName, data) {
 // Functie apelata din eventul de add/edit/delete contracts din dxdatagrid 
 function contracts_action_editAddDelete(newjson) 
 {
-    console.log(newjson);
+    console.log("addedit", newjson);
+    console.log(rndString);
     $.ajax({
         type: "POST",
         url: "phpScripts/addEditDelete_contracts_fromDB.php",
@@ -1436,6 +1512,12 @@ function contracts_action_editAddDelete(newjson)
                         'closable' : true,
                         'message': "Edit failed ! Someone overwrote your attempt to edit the contract !",
                     }).show();
+            else if (newjson.action == 'addContract') {
+                // Stergem tokenul pentru ca am terminat cu el
+                window.rndString = undefined;
+                delete window.rndString;
+            }
+                
         },
         error: function() {
             // console.log("contracts_action_editAddDelete  ajax a dat eroare. daca e incompleta informatia s-a adaugat oricum");
@@ -1480,7 +1562,14 @@ function verifyEditStatus(userID, contractID, actionID, editBtnClass)
                                 'labels': {
                                     'ok': 'Yes', 
                                     'cancel': 'No'
-                                },           
+                                },   
+                                'onshow': function() {    
+                                    $(".ajs-ok").css({'display':'initial'});
+                                    $(".ajs-cancel").css({'display':'initial'}); 
+                                    $(".ajs-dialog").css({'height':'225px'});
+                                    // $(".ajs-dialog").css({'display':'initial'}); 
+                                    // $(".ajs-content").css({'display':'initial'}); 
+                                   },
                                 'onok': function() {
                                     verifyEditStatus(userID, contractID, 2, editBtnClass); 
                                 },
@@ -1495,6 +1584,13 @@ function verifyEditStatus(userID, contractID, actionID, editBtnClass)
                                 'transition': 'none',
                                 'closable' : true,
                                 'message': "<i><ins>" + returned_data[0].FirstName + " " + returned_data[0].LastName +  "</ins></i> is already editing this contract !" + '<br /> Start editing time:    <b>' + returned_data[0].EditBeginDate + '</b>',
+                                'onshow': function() {    
+                                    $(".ajs-ok").css({'display':'initial'});
+                                    $(".ajs-cancel").css({'display':'initial'}); 
+                                    $(".ajs-dialog").css({'height':'200px'}); 
+                                    $(".ajs-content").css({'overflow':'hidden'});
+                                    // $(".ajs-content").css({'display':'initial'}); 
+                                   },
                             }).show();
                             window.weCanEdit = 0;
                         }
