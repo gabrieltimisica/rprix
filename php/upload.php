@@ -4,7 +4,6 @@ include("db_config.php");
 include("ftp_config.php");
 
 
-
 for($i = 0; $i < count($_FILES); $i++) {
     $file = $_FILES['file'.$i];
 

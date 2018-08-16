@@ -192,7 +192,6 @@ function draw_table(table_data)
 {
     $("#dataGrid").dxDataGrid({
         dataSource: table_data,
-        rowAlternationEnabled: true,
         hoverStateEnabled: true,
         columns: [
             {
@@ -310,6 +309,7 @@ function draw_table(table_data)
                 dataField:'OrganizationName',
                 alignment: 'center',
                 allowGrouping: true,
+                visible: false,
                 editCellTemplate: function (cellElement, cellInfo) {
                     // vedem valoarea initiala la isInvalid in functie de edit sau add
                     var notOnEditForm;
@@ -803,35 +803,33 @@ function draw_table(table_data)
 
                             // 2 eventuri pentru butoanele de close si X
                             // merg pe edit si pe add
-                            $(document).on("click", "div[aria-label='Cancel'] span:contains('Cancel'), div[aria-label='close'] i.dx-icon-close", function() {
+                            $(document).on("click", "div[aria-label='Cancel'] span:contains('Cancel'), div[aria-label='close'] i.dx-icon-close", function(e) {
                                 stopDateTimeTimeout = 2;
                                 organizationName = undefined;
                                 contractNumberIn = undefined;
                                 clientName = undefined;
                                 contractName = undefined;
+                                window.rndString = undefined;
                                 delete(contractName);
                                 delete(contractNumberIn);
                                 delete(organizationName);
                                 delete(clientName);
-                                // wecanedit la contracte ... cazul in care dam close la popup, trebuie pusa valoarea pe 0
-                                window.weCanEdit = 0;
-                                verifyEditStatus(userID_fromSession, editContractID, 3, null);
-                                clientID = '';
-                                orgID = '';
-                                
-                                // Vladimir
-                             
+                                delete window.rndString;  
+                              
                                 $.ajax({
-                                    type: 'POST',
-                                    data: { Token: rndString },
-                                    url: "phpScripts/DeleteFileFromServerIfClosePopup.php",
-                                    dataType:"json"
-                                });
-                                
-                                window.rndString = undefined;
-                                delete window.rndString;   
-                            
-                            });//$(document).on("click", "div[aria-label='Cancel'] span:contains('Cancel'), div[aria-label='close'] i.dx-icon-close", function()
+                                      type: 'POST',
+                                      data: { Token: rndString },
+                                      url: "phpScripts/DeleteFileFromServerIfClosePopup.php",
+                                      dataType:"json"
+                                 });
+                                // wecanedit la contracte ... cazul in care dam close la popup, trebuie pusa valoarea pe 0
+                                if ($("div.dx-popup-title div:contains('Edit contract')").length > 0) {
+                                      window.weCanEdit = 0;
+                                      verifyEditStatus(userID_fromSession, editContractID, 3, null);
+                                      clientID = '';
+                                      orgID = '';
+                                }   
+                            });
                         }); // end settimeout
                     } // end template: function(data, itemElement)
                 } , {
@@ -877,7 +875,6 @@ function draw_table(table_data)
                                         $("#UploadButton").click(function(){
                                             /* Now send the gathered files data to our backend server */
                                             var form = $('#form')[0]; // You need to use standard javascript object here
-                                            
                                             var formData = new FormData(form);
                                             $.each($("input[type='file']")[0].files, function(i, file) {
                                                 formData.append('file' + i, $('input[type=file]')[0].files[i]);
@@ -1061,58 +1058,48 @@ function draw_table(table_data)
             ignoreColumnOptionNames: []
         },
         onRowPrepared: function (info) {
+            if (info.dataIndex % 2)
+                info.rowElement.css("background-color", "#f5f5f5"); 
             if (info.rowType == 'data' )
-            for (var key in info.cells)
-            {
-                if (info.cells[key].column['dataField'] == 'ContractStatusID')
-                // coloram liniile in functie de status
-                // switch (info.data.ContractStatusID) {
-                //     case 1: 
-                //         // canceled
-                //         info.rowElement.css("background-color", "#AF7B98"); 
-                //         break;
-                //     case 2:
-                //         // active
-                //         info.rowElement.css("background-color", "#B1EDE8"); 
-                //         break;
-                //     case 3:
-                //         // closed
-                //         info.rowElement.css("background-color", "#FF99A3"); 
-                //         break;
-                //     case 4:
-                //         // preliminary
-                //         info.rowElement.css("background-color", "#EFCFAE"); 
-                //         break; 
-                //     case 5:
-                //         // deleted
-                //         info.rowElement.css("background-color", "#8B7696"); 
-                //         break; 
-                // } 
-                switch (info.data.ContractStatusID) {
-                    case 1: 
-                        // canceled
-                        info.cells[key].cellElement[0].bgColor = "#AF7B98"; 
-                        break;
-                    case 2:
-                        // active
-                        info.cells[key].cellElement[0].bgColor = "#B1EDE8"; 
-                        break;
-                    case 3:
-                        // closed
-                        info.cells[key].cellElement[0].bgColor = "#FF99A3"; 
-                        break;
-                    case 4:
-                        // preliminary
-                        info.cells[key].cellElement[0].bgColor = "#EFCFAE"; 
-                        break; 
-                    case 5:
-                        // deleted
-                        info.cells[key].cellElement[0].bgColor = "#8B7696"; 
-                        break; 
-                } 
-            }
+                for (var key in info.cells) {
+                    if (info.cells[key].column['dataField'] == 'ContractStatusID')
+                        switch (info.data.ContractStatusID) {
+                            case 1: 
+                                // canceled
+                                info.cells[key].cellElement[0].bgColor = "#AF7B98"; 
+                                break;
+                            case 2:
+                                // active
+                                info.cells[key].cellElement[0].bgColor = "#B1EDE8"; 
+                                break;
+                            case 3:
+                                // closed
+                                info.cells[key].cellElement[0].bgColor = "#FF99A3"; 
+                                break;
+                            case 4:
+                                // preliminary
+                                info.cells[key].cellElement[0].bgColor = "#EFCFAE"; 
+                                break; 
+                            case 5:
+                                // deleted
+                                info.cells[key].cellElement[0].bgColor = "#8B7696"; 
+                                break; 
+                        } 
+                } // end for
         },
         onContentReady: function (e) {
+            // set width of icon column
+            e.component.columnOption("command:edit", {width: 150});
+            e.component.updateDimensions();
+
+            // icon pentru afisare contract
+            $(".show-contract-btn").remove(); // ca sa nu se puna mai multe 
+            $(".dx-command-edit-with-icons").toArray().forEach((value, index) => {
+                if (index < $(".dx-command-edit-with-icons").toArray().length - 2)
+                    $(value).prepend(`<i class='show-contract-btn fa fa-eye' aria-hidden='true'/>`)
+            });
+
+            console.log("contentready", e);
             // verificam privilegiile si scoatem optiunea de add
             if (!contractAddPrivilege) {
                 $("span.dx-button-text:contains('Add contract')")
@@ -1232,6 +1219,14 @@ function draw_table(table_data)
             },100); 
         },
         onCellPrepared: function(e) {
+            // punem id-ul contractului pe iconul de afisare contracte
+            var arrayOfEditCellClasses = $(".dx-command-edit-with-icons").toArray();
+            if (e.rowIndex !== 'undefined' && e.data !== undefined) {
+                setTimeout(() => {
+                    $(arrayOfEditCellClasses[e.rowIndex + 2]).children(".show-contract-btn").addClass('contractID' + e.data.ContractID); 
+                })
+            }
+
             // Privilegii de edit si delete
           	if (!contractEditPrivilege)
                 e.cellElement
@@ -1323,7 +1318,20 @@ function draw_table(table_data)
                     });
                 }); // end setTimeout
             }
-        }
+        },
+        // columnWidth: 100,
+        customizeColumns: function(e) {
+            console.log("customizeColumns", e);
+            // Custom width pentru fiecare coloana
+            switch (e[0].caption) {
+                case 'Row Number':
+                    e[0].width = 111;
+                    break;
+                case 'ContractExpireDate':
+                    e[0].width = 300;
+                    break;
+            }
+        },
     }); // end dxdatagrid
 }
 
@@ -1523,6 +1531,7 @@ function contracts_action_editAddDelete(newjson)
 // editbtnclass e clasa butonului de edit pe care am apasat, e diferita la toate
 function verifyEditStatus(userID, contractID, actionID, editBtnClass) 
 {
+    console.log(actionID);
     let jsonToSend = {
         'userID': userID,
         'contractID': contractID,
@@ -1598,7 +1607,7 @@ function verifyEditStatus(userID, contractID, actionID, editBtnClass)
             }
         },
         error: function() {
-            console.log("nu merge");
+            // console.log("nu merge");
         }
     }); // end ajax
 }

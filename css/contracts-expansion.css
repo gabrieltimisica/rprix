@@ -205,3 +205,12 @@ table.dropdown-input span.fa-search {
     /* overflow-y: scroll; */
 }
 
+/* Butonul de afisare contract */
+.show-contract-btn {
+    font-size: 20px;
+    position: relative;
+    top: 1px;
+    right: 8px;
+    cursor: pointer;
+}
+
