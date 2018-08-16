@@ -191,7 +191,6 @@ function draw_table(table_data)
 {
     $("#dataGrid").dxDataGrid({
         dataSource: table_data,
-        rowAlternationEnabled: true,
         hoverStateEnabled: true,
         columns: [
             {
@@ -309,6 +308,7 @@ function draw_table(table_data)
                 dataField:'OrganizationName',
                 alignment: 'center',
                 allowGrouping: true,
+                visible: false,
                 editCellTemplate: function (cellElement, cellInfo) {
                     // vedem valoarea initiala la isInvalid in functie de edit sau add
                     var notOnEditForm;
@@ -802,7 +802,7 @@ function draw_table(table_data)
 
                             // 2 eventuri pentru butoanele de close si X
                             // merg pe edit si pe add
-                            $(document).on("click", "div[aria-label='Cancel'] span:contains('Cancel'), div[aria-label='close'] i.dx-icon-close", function() {
+                            $(document).on("click", "div[aria-label='Cancel'] span:contains('Cancel'), div[aria-label='close'] i.dx-icon-close", function(e) {
                                 stopDateTimeTimeout = 2;
                                 organizationName = undefined;
                                 contractNumberIn = undefined;
@@ -813,10 +813,12 @@ function draw_table(table_data)
                                 delete(organizationName);
                                 delete(clientName);
                                 // wecanedit la contracte ... cazul in care dam close la popup, trebuie pusa valoarea pe 0
-                                window.weCanEdit = 0;
-                                verifyEditStatus(userID_fromSession, editContractID, 3, null);
-                                clientID = '';
-                                orgID = '';
+                                if ($("div.dx-popup-title div:contains('Edit contract')").length > 0) {
+                                    window.weCanEdit = 0;
+                                    verifyEditStatus(userID_fromSession, editContractID, 3, null);
+                                    clientID = '';
+                                    orgID = '';
+                                }
                             });
                         }); // end settimeout
                     } // end template: function(data, itemElement)
@@ -842,49 +844,39 @@ function draw_table(table_data)
                                                 $(".ajs-ok").css({'display':'none'});
                                                 $(".ajs-cancel").addClass("bg-success");
                                                 $(".ajs-cancel").prop("disabled",true);
-                                                $(".ajs-content").html("<form id=\"form\" class=\"mb-5\" action=\"\" method=\"\" enctype=\"multipart/form-data\">");
-                                                $("#form").append(" <input id=\"choose-button\" name =\"file[]\"class = \"mb-5\"type=\"file\" accept=\"\" multiple=\"multiple\" >");
-                                                $("#form").append("<br><label for=\"ContractDescription\">Contract file description:</label>"); 
-                                                $("#form").append("<textarea class=\"form-control mb-5\" id=\"ContractDescription\" name=\"description\" rows=\"3\"></textarea></div>"); 
-                                                $("#form").append("<div class=\"d-flex justify-content-center\"><input id=\"upload-contract\"  type=\"submit\" value=\"Upload contract\"  ></div>");                                          
+                                                // $(".ajs-content").html("<form id=\"form\" class=\"mb-5\" action=\"\" method=\"POST\" enctype=\"multipart/form-data\">");
+                                                $(".ajs-content").html('<form enctype="multipart/form-data"><input name="file" class="mb-5" type="file" multiple="true"/><br/><label for=\"ContractDescription\">Contract file description:</label><textarea class=\"form-control mb-5\" id=\"ContractDescription\" name=\"description\" rows=\"3\"></textarea><div class=\"d-flex justify-content-center\"><input type="button" value="Upload Contract"/></div></form>');
+                                                // $("#form").append(" <input id=\"choose-button\" name =\"file[]\"class = \"mb-5\"type=\"file\" accept=\"\" multiple=\"true\" >");
+                                                // $("#form").append("<br><label for=\"ContractDescription\">Contract file description:</label>"); 
+                                                // $("#form").append("<textarea class=\"form-control mb-5\" id=\"ContractDescription\" name=\"description\" rows=\"3\"></textarea></div>"); 
+                                                // $("#form").append("<div class=\"d-flex justify-content-center\"><input id=\"upload-contract\"  type=\"submit\" value=\"Upload contract\"  ></div>");                                          
                                               }
                                             }).show();
-                                        $("#form").submit(function(){ event.preventDefault();});// sa nu se mai inchida popupul
-                                        $("#upload-contract").click(function(){
-                                            var data = [];
-                                            var j = 0;
+                                        $("form").submit(function(){ event.preventDefault();});// sa nu se mai inchida popupul
+                                        $(":button").click(function(){
+                                            // var file_data = $('#choose-button').prop('files')[0];
+                                            // console.log($('#choose-button').prop('files')[0]);   
+                                            // var form_data = new FormData();                  
+                                            // form_data.append('file', file_data);
+                                            /* Now send the gathered files data to our backend server */
+                                            var form = $('#form')[0]; // You need to use standard javascript object here
+                                            var formData = new FormData(form);
                                             $.each($("input[type='file']")[0].files, function(i, file) {
-                                                // console.log($_FILES["file"]["tmp_name"]);
-                                                // console.log(document.getElementById('choose-button').value);
-                                                console.log($("#choose-button").val());
-                                                
-                                                data[j] = new Object();
-                                                // data[j].tm = $_FILES["file"]["tmp_name"];
-                                                data[j].name = $("input[type='file']")[0].files[i].name;
-                                                data[j].size = $("input[type='file']")[0].files[i].size;
-                                                data[j].type = $("input[type='file']")[0].files[i].type;
-                                                data[j].temporary = $("input[type='file']")[0].files[i].tmp_name;
-                                                data[j].path = $("input[type='file']").val();
-                                                data[j].description = $("textarea#ContractDescription").val();
-                                                data[j].userID = userID_fromSession;
-                                                // data[j].path = $("#ContractDescription").value;
-                                                j++;
-                                            });     
+                                                formData.append('file' + i, $('input[type=file]')[0].files[i]);
+                                            });//end of $.each($("input[type='file']")[0].files, function(i, file)
+                                            formData.append('fileDescription',$("textarea#ContractDescription").val());
+                                            formData.append('UserIDUpload',userID_fromSession);
                                             $.ajax({
-                                                url: 'upload.php', 
-                                                dataType: 'json', 
-                                                cache: false,
-                                                data: {"myData": JSON.stringify(data)} ,                         
                                                 type: 'POST',
-                                                success: function(php_script_response){
-                                                    
-                                                }
-                                             });
-                                        });
-                        
-
-                      });
-                    }// end template: function(data, itemElement)
+                                                cache: false,
+                                                processData: false,
+                                                contentType: false,
+                                                data: formData,
+                                                url: 'upload.php'
+                                            });// end of ajax
+                                    });//$(":button").click(function()
+                      });//$( "#upload-button" ).click(function()
+                    }// end of template: function(data, itemElement) 
                 }, {
                     itemType: "group",
                     colSpan: 1,
@@ -995,59 +987,48 @@ function draw_table(table_data)
             ignoreColumnOptionNames: []
         },
         onRowPrepared: function (info) {
-            console.log(info);
+            if (info.dataIndex % 2)
+                info.rowElement.css("background-color", "#f5f5f5"); 
             if (info.rowType == 'data' )
-            for (var key in info.cells)
-            {
-                if (info.cells[key].column['dataField'] == 'ContractStatusID')
-                // coloram liniile in functie de status
-                // switch (info.data.ContractStatusID) {
-                //     case 1: 
-                //         // canceled
-                //         info.rowElement.css("background-color", "#AF7B98"); 
-                //         break;
-                //     case 2:
-                //         // active
-                //         info.rowElement.css("background-color", "#B1EDE8"); 
-                //         break;
-                //     case 3:
-                //         // closed
-                //         info.rowElement.css("background-color", "#FF99A3"); 
-                //         break;
-                //     case 4:
-                //         // preliminary
-                //         info.rowElement.css("background-color", "#EFCFAE"); 
-                //         break; 
-                //     case 5:
-                //         // deleted
-                //         info.rowElement.css("background-color", "#8B7696"); 
-                //         break; 
-                // } 
-                switch (info.data.ContractStatusID) {
-                    case 1: 
-                        // canceled
-                        info.cells[key].cellElement[0].bgColor = "#AF7B98"; 
-                        break;
-                    case 2:
-                        // active
-                        info.cells[key].cellElement[0].bgColor = "#B1EDE8"; 
-                        break;
-                    case 3:
-                        // closed
-                        info.cells[key].cellElement[0].bgColor = "#FF99A3"; 
-                        break;
-                    case 4:
-                        // preliminary
-                        info.cells[key].cellElement[0].bgColor = "#EFCFAE"; 
-                        break; 
-                    case 5:
-                        // deleted
-                        info.cells[key].cellElement[0].bgColor = "#8B7696"; 
-                        break; 
-                } 
-            }
+                for (var key in info.cells) {
+                    if (info.cells[key].column['dataField'] == 'ContractStatusID')
+                        switch (info.data.ContractStatusID) {
+                            case 1: 
+                                // canceled
+                                info.cells[key].cellElement[0].bgColor = "#AF7B98"; 
+                                break;
+                            case 2:
+                                // active
+                                info.cells[key].cellElement[0].bgColor = "#B1EDE8"; 
+                                break;
+                            case 3:
+                                // closed
+                                info.cells[key].cellElement[0].bgColor = "#FF99A3"; 
+                                break;
+                            case 4:
+                                // preliminary
+                                info.cells[key].cellElement[0].bgColor = "#EFCFAE"; 
+                                break; 
+                            case 5:
+                                // deleted
+                                info.cells[key].cellElement[0].bgColor = "#8B7696"; 
+                                break; 
+                        } 
+                } // end for
         },
         onContentReady: function (e) {
+            // set width of icon column
+            e.component.columnOption("command:edit", {width: 150});
+            e.component.updateDimensions();
+
+            // icon pentru afisare contract
+            $(".show-contract-btn").remove(); // ca sa nu se puna mai multe 
+            $(".dx-command-edit-with-icons").toArray().forEach((value, index) => {
+                if (index < $(".dx-command-edit-with-icons").toArray().length - 2)
+                    $(value).prepend(`<i class='show-contract-btn fa fa-eye' aria-hidden='true'/>`)
+            });
+
+            console.log("contentready", e);
             // verificam privilegiile si scoatem optiunea de add
             if (!contractAddPrivilege) {
                 $("span.dx-button-text:contains('Add contract')")
@@ -1163,6 +1144,14 @@ function draw_table(table_data)
             },100); 
         },
         onCellPrepared: function(e) {
+            // punem id-ul contractului pe iconul de afisare contracte
+            var arrayOfEditCellClasses = $(".dx-command-edit-with-icons").toArray();
+            if (e.rowIndex !== 'undefined' && e.data !== undefined) {
+                setTimeout(() => {
+                    $(arrayOfEditCellClasses[e.rowIndex + 2]).children(".show-contract-btn").addClass('contractID' + e.data.ContractID); 
+                })
+            }
+
             // Privilegii de edit si delete
           	if (!contractEditPrivilege)
                 e.cellElement
@@ -1254,7 +1243,20 @@ function draw_table(table_data)
                     });
                 }); // end setTimeout
             }
-        }
+        },
+        // columnWidth: 100,
+        customizeColumns: function(e) {
+            console.log("customizeColumns", e);
+            // Custom width pentru fiecare coloana
+            switch (e[0].caption) {
+                case 'Row Number':
+                    e[0].width = 111;
+                    break;
+                case 'ContractExpireDate':
+                    e[0].width = 300;
+                    break;
+            }
+        },
     }); // end dxdatagrid
 }
 
@@ -1447,6 +1449,7 @@ function contracts_action_editAddDelete(newjson)
 // editbtnclass e clasa butonului de edit pe care am apasat, e diferita la toate
 function verifyEditStatus(userID, contractID, actionID, editBtnClass) 
 {
+    console.log(actionID);
     let jsonToSend = {
         'userID': userID,
         'contractID': contractID,
@@ -1508,7 +1511,7 @@ function verifyEditStatus(userID, contractID, actionID, editBtnClass)
             }
         },
         error: function() {
-            console.log("nu merge");
+            // console.log("nu merge");
         }
     }); // end ajax
 }
