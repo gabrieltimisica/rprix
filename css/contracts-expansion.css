@@ -195,13 +195,13 @@ table.dropdown-input span.fa-search {
 
 /*clasa container popup*/
 .ajs-dialog{
-    width: 700px;
-    height: 500px;
+    /* width: 700px; */
+    /* height: 500px; */
 }
 
 /*clasa contentul popupului*/
 .ajs-content{
     padding: 0;
-    overflow-y: scroll;
+    /* overflow-y: scroll; */
 }
 
